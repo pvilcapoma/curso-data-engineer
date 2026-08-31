@@ -170,6 +170,27 @@ details.ex .inner{padding:0 16px 14px}
 .donebtn:hover{border-color:var(--good);color:var(--good-ink)}
 .donebtn.on{background:var(--good);border-color:var(--good);color:#fff}
 
+/* ============ audiolibro ============ */
+.herolisten{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.8rem;letter-spacing:.04em;padding:11px 20px;border-radius:99px;background:var(--accent);color:#fff;border:none;margin:0 0 1.4rem;box-shadow:var(--shadow)}
+.herolisten:hover{filter:brightness(1.08)}
+.mlisten{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:99px;border:1px solid var(--line2);background:var(--surface);color:var(--muted)}
+.mlisten:hover{border-color:var(--accent);color:var(--accent-ink)}
+.lbtn{margin-left:auto;flex:none;font-size:.85rem;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);display:inline-flex;align-items:center;justify-content:center;align-self:center}
+.lbtn:hover{border-color:var(--accent)}
+.audiobar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:none;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -8px 28px rgba(0,0,0,.14);padding:10px clamp(12px,3vw,24px)}
+.audiobar.on{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.abtn{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line2);background:var(--surface2);font-size:.95rem;display:flex;align-items:center;justify-content:center;flex:none}
+.abtn:hover{border-color:var(--accent);color:var(--accent-ink)}
+.abtn.play{background:var(--accent);border-color:var(--accent);color:#fff;width:46px;height:46px;font-size:1.1rem}
+.atrack{flex:1;min-width:150px}
+.atrack .now{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52vw}
+.atrack .sub{font-family:var(--mono);font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.audiobar select{font:inherit;font-size:.76rem;background:var(--surface2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px 6px;max-width:160px}
+.reading{outline:2px solid var(--accent);outline-offset:3px;border-radius:16px}
+body.audio-on .main{padding-bottom:170px}
+body.audio-on .menubtn{bottom:86px}
+@media (max-width:560px){.audiobar select#avoice{max-width:110px}}
+
 /* ============ mobile ============ */
 .menubtn{display:none;position:fixed;bottom:18px;right:18px;z-index:30;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;font-size:1.3rem;box-shadow:var(--shadow);align-items:center;justify-content:center}
 @media (max-width:900px){
@@ -217,6 +238,7 @@ details.ex .inner{padding:0 16px 14px}
   <div class="eyebrow">Pipelines ETL · Lakehouse · Migración Teradata → AWS</div>
   <h1>Curso teórico de Data Engineering en AWS</h1>
   <p class="lead">Nueve módulos que explican la teoría detrás de cada tema del banco de preguntas: no solo <em>qué</em> responder, sino <em>por qué</em> las cosas funcionan así. Cada módulo abre con un glosario de definiciones clave y cada lección incluye el concepto, ejemplos y cómo llevarlo a una entrevista.</p>
+  <button class="herolisten" id="herolisten">🎧 Escuchar como audiolibro</button>
   <div class="chips">
     <span class="chip">SQL · Redshift · Athena</span><span class="chip">PySpark</span><span class="chip">Glue</span><span class="chip">Step Functions</span><span class="chip">Iceberg</span><span class="chip">Lake Formation</span><span class="chip">CDK · GitHub Actions</span><span class="chip">Banca</span>
   </div>
@@ -1430,6 +1452,25 @@ def test_descarta_montos_negativos(spark):
 </main>
 </div>
 <button class="menubtn" id="menubtn" aria-label="Abrir índice">☰</button>
+
+<div class="audiobar" id="audiobar" role="region" aria-label="Reproductor de audiolibro">
+  <button class="abtn" id="aprev" title="Sección anterior">⏮</button>
+  <button class="abtn play" id="aplay" title="Reproducir / pausar">▶</button>
+  <button class="abtn" id="anext" title="Sección siguiente">⏭</button>
+  <div class="atrack">
+    <div class="sub" id="asub">Audiolibro</div>
+    <div class="now" id="anow">—</div>
+  </div>
+  <select id="arate" title="Velocidad de lectura">
+    <option value="0.85">0.85×</option>
+    <option value="1" selected>1×</option>
+    <option value="1.15">1.15×</option>
+    <option value="1.3">1.3×</option>
+    <option value="1.5">1.5×</option>
+  </select>
+  <select id="avoice" title="Voz"></select>
+  <button class="abtn" id="aclose" title="Cerrar reproductor">✕</button>
+</div>
 <script>
 (function(){
   var KEY='curso-de-progress';
@@ -1471,6 +1512,184 @@ def test_descarta_montos_negativos(spark):
   var side=document.getElementById('side'),mb=document.getElementById('menubtn');
   if(mb)mb.addEventListener('click',function(){side.classList.toggle('open');});
   document.querySelectorAll('#toc a').forEach(function(a){a.addEventListener('click',function(){side.classList.remove('open')})});
+})();
+</script>
+<script>
+/* ==================== modo audiolibro (Web Speech API) ==================== */
+(function(){
+  var heroBtn=document.getElementById('herolisten');
+  if(!('speechSynthesis' in window)){ if(heroBtn)heroBtn.style.display='none'; return; }
+  var synth=window.speechSynthesis;
+  var bar=document.getElementById('audiobar'),
+      playBtn=document.getElementById('aplay'),
+      prevBtn=document.getElementById('aprev'),
+      nextBtn=document.getElementById('anext'),
+      closeBtn=document.getElementById('aclose'),
+      nowEl=document.getElementById('anow'),
+      subEl=document.getElementById('asub'),
+      rateSel=document.getElementById('arate'),
+      voiceSel=document.getElementById('avoice');
+
+  var SKEY='curso-de-audio';
+  function loadS(){try{return JSON.parse(localStorage.getItem(SKEY))||{}}catch(e){return{}}}
+  function saveS(s){try{localStorage.setItem(SKEY,JSON.stringify(s))}catch(e){}}
+  var settings=loadS();
+  if(settings.rate)rateSel.value=settings.rate;
+
+  /* ---- lista de reproducción: intro → definiciones → lecciones → esencial, por módulo ---- */
+  var items=[];
+  document.querySelectorAll('section.module').forEach(function(sec){
+    var h2=sec.querySelector('.mhead h2');
+    var mtitle=h2?h2.textContent.trim():'';
+    var mhead=sec.querySelector('.mhead');
+    if(mhead)items.push({el:mhead,label:mtitle,sub:'Introducción'});
+    var defs=sec.querySelector('.defs');
+    if(defs)items.push({el:defs,label:'Definiciones clave',sub:mtitle});
+    sec.querySelectorAll('article.lesson').forEach(function(les){
+      var h3=les.querySelector('h3'),ln=les.querySelector('.ln');
+      var t=h3?h3.textContent.trim():'';
+      if(ln)t=(ln.textContent+' · '+t.replace(ln.textContent,'')).trim();
+      items.push({el:les,label:t,sub:mtitle});
+    });
+    var tk=sec.querySelector('.takeaways');
+    if(tk)items.push({el:tk,label:'Lo esencial',sub:mtitle});
+  });
+
+  /* ---- botones de escucha por lección y por módulo ---- */
+  items.forEach(function(it,i){
+    if(it.el.matches&&it.el.matches('article.lesson')){
+      var h3=it.el.querySelector('h3');
+      if(h3){
+        var b=document.createElement('button');
+        b.className='lbtn';b.title='Escuchar esta lección';b.textContent='🔊';
+        b.addEventListener('click',function(){openBar();startItem(i);});
+        h3.appendChild(b);
+      }
+    }
+    if(it.el.matches&&it.el.matches('.mhead')){
+      var k=it.el.querySelector('.mkicker');
+      if(k){
+        var b2=document.createElement('button');
+        b2.className='mlisten';b2.textContent='🎧 Escuchar módulo';
+        b2.addEventListener('click',function(){openBar();startItem(i);});
+        k.appendChild(b2);
+      }
+    }
+  });
+
+  /* ---- extracción de texto hablable ---- */
+  function textOf(el){
+    var c=el.cloneNode(true);
+    c.querySelectorAll('pre.code').forEach(function(n){n.textContent=' Aquí hay un ejemplo de código; revísalo en pantalla. ';});
+    c.querySelectorAll('.scroll').forEach(function(n){n.textContent=' Aquí hay una tabla comparativa; revísala en pantalla. ';});
+    c.querySelectorAll('svg,.lbtn,.mlisten').forEach(function(n){n.parentNode&&n.parentNode.removeChild(n);});
+    var t=c.textContent||'';
+    t=t.replace(/→/g,', luego ')
+       .replace(/≈/g,' equivale a ')
+       .replace(/≤/g,' menor o igual a ')
+       .replace(/≠/g,' distinto de ')
+       .replace(/±/g,' más menos ')
+       .replace(/~\$/g,'aproximadamente $')
+       .replace(/~/g,'aproximadamente ')
+       .replace(/&gt;/g,' mayor que ');
+    try{t=t.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{2B00}-\u{2BFF}]/gu,' ');}catch(e){}
+    return t.replace(/\s+/g,' ').trim();
+  }
+
+  /* ---- trocear en frases cortas (evita cortes del sintetizador) ---- */
+  function chunkify(t){
+    var sentences=t.match(/[^.!?]+[.!?]+[\s"»)\]]*|[^.!?]+$/g)||[t];
+    var out=[],buf='';
+    sentences.forEach(function(s){
+      if(buf&&(buf+s).length>200){out.push(buf.trim());buf='';}
+      buf+=s;
+      while(buf.length>240){
+        var cut=buf.lastIndexOf(',',220);
+        if(cut<60)cut=220;
+        out.push(buf.slice(0,cut+1).trim());
+        buf=buf.slice(cut+1);
+      }
+    });
+    if(buf.trim())out.push(buf.trim());
+    return out.filter(function(s){return s.length>1});
+  }
+
+  /* ---- voces en español ---- */
+  var voice=null;
+  function loadVoices(){
+    var all=synth.getVoices();
+    var vs=all.filter(function(v){return /^es/i.test(v.lang)});
+    if(!vs.length)vs=all;
+    voiceSel.innerHTML='';
+    vs.forEach(function(v){
+      var o=document.createElement('option');
+      o.value=v.name;
+      o.textContent=v.name.replace(/^(Microsoft|Google)\s*/,'').split(' - ')[0]+' · '+v.lang;
+      voiceSel.appendChild(o);
+    });
+    voice=null;
+    if(settings.voice){voice=vs.filter(function(v){return v.name===settings.voice})[0]||null;}
+    if(!voice){voice=vs.filter(function(v){return /es[-_]?(PE|419|MX|US|ES)/i.test(v.lang)})[0]||vs[0]||null;}
+    if(voice)voiceSel.value=voice.name;
+  }
+  loadVoices();
+  synth.onvoiceschanged=loadVoices;
+  voiceSel.addEventListener('change',function(){
+    var all=synth.getVoices();
+    voice=all.filter(function(v){return v.name===voiceSel.value})[0]||voice;
+    settings.voice=voiceSel.value;saveS(settings);
+    restartChunk();
+  });
+  rateSel.addEventListener('change',function(){
+    settings.rate=rateSel.value;saveS(settings);
+    restartChunk();
+  });
+
+  /* ---- reproducción ---- */
+  var idx=0,chunks=[],ci=0,mode='stopped',seq=0;
+  function clearReading(){document.querySelectorAll('.reading').forEach(function(n){n.classList.remove('reading')})}
+  function updateBtn(){playBtn.textContent=(mode==='playing')?'⏸':'▶';}
+  function openBar(){bar.classList.add('on');document.body.classList.add('audio-on');}
+  function closeBar(){stopAll();bar.classList.remove('on');document.body.classList.remove('audio-on');}
+  function stopAll(){mode='stopped';seq++;synth.cancel();clearReading();updateBtn();}
+  function startItem(i){
+    if(i<0)i=0;
+    if(i>=items.length){stopAll();nowEl.textContent='Fin del curso';subEl.textContent='Audiolibro';return;}
+    seq++;synth.cancel();clearReading();
+    idx=i;var it=items[i];
+    it.el.classList.add('reading');
+    try{it.el.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){}
+    nowEl.textContent=it.label;subEl.textContent=it.sub;
+    chunks=chunkify(textOf(it.el));ci=0;mode='playing';updateBtn();
+    var my=seq;setTimeout(function(){speakNext(my)},80);
+  }
+  function speakNext(my){
+    if(my!==seq||mode==='stopped')return;
+    if(ci>=chunks.length){startItem(idx+1);return;}
+    var u=new SpeechSynthesisUtterance(chunks[ci++]);
+    u.lang=(voice&&voice.lang)||'es-ES';
+    if(voice)u.voice=voice;
+    u.rate=parseFloat(rateSel.value)||1;
+    u.onend=function(){speakNext(my);};
+    u.onerror=function(){speakNext(my);};
+    synth.speak(u);
+  }
+  function restartChunk(){
+    if(mode==='stopped')return;
+    ci=Math.max(0,ci-1);seq++;synth.cancel();
+    mode='playing';updateBtn();
+    var my=seq;setTimeout(function(){speakNext(my)},80);
+  }
+  playBtn.addEventListener('click',function(){
+    if(mode==='playing'){synth.pause();mode='paused';updateBtn();}
+    else if(mode==='paused'){synth.resume();mode='playing';updateBtn();}
+    else startItem(idx);
+  });
+  prevBtn.addEventListener('click',function(){startItem(Math.max(0,idx-1))});
+  nextBtn.addEventListener('click',function(){startItem(idx+1)});
+  closeBtn.addEventListener('click',closeBar);
+  if(heroBtn)heroBtn.addEventListener('click',function(){openBar();startItem(0)});
+  window.addEventListener('beforeunload',function(){synth.cancel()});
 })();
 </script>
 </body>
