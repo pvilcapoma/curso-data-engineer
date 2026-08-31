@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curso Data Engineer AWS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --surface2:#f6f8fa;
+  --ink:#17222d; --muted:#5b6b7a; --line:#d9e0e7; --line2:#c6cfd8;
+  --accent:#d16a0c; --accent-soft:#f8e9d6; --accent-ink:#8f4a06;
+  --good:#1b8a55; --good-soft:#def2e7; --good-ink:#136a41;
+  --bad:#c24040; --bad-soft:#f9e4e2; --bad-ink:#993434;
+  --warn:#a97a0b; --warn-soft:#f6edd3;
+  --info:#2563a8; --info-soft:#e3edf8; --info-ink:#1d4f86;
+  --code-bg:#141b23; --code-ink:#d7e2ec; --code-cm:#7d919f; --code-kw:#f0a35e; --code-str:#8fd0a9;
+  --shadow:0 1px 2px rgba(23,34,45,.05),0 10px 28px rgba(23,34,45,.08);
+  --disp:'Bricolage Grotesque','IBM Plex Sans',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e141b; --surface:#161e28; --surface2:#1b2430;
+    --ink:#e7edf3; --muted:#8fa1b1; --line:#2a3644; --line2:#374557;
+    --accent:#f0913a; --accent-soft:#372510; --accent-ink:#f5b678;
+    --good:#43c084; --good-soft:#16301f; --good-ink:#6bd6a2;
+    --bad:#e0736c; --bad-soft:#3a201e; --bad-ink:#eb9b95;
+    --warn:#d8a637; --warn-soft:#322913;
+    --info:#5f9bd8; --info-soft:#152535; --info-ink:#8dbbe8;
+    --code-bg:#0c1218; --code-ink:#cfdae4; --code-cm:#5f7382; --code-kw:#f0a35e; --code-str:#8fd0a9;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e141b; --surface:#161e28; --surface2:#1b2430;
+  --ink:#e7edf3; --muted:#8fa1b1; --line:#2a3644; --line2:#374557;
+  --accent:#f0913a; --accent-soft:#372510; --accent-ink:#f5b678;
+  --good:#43c084; --good-soft:#16301f; --good-ink:#6bd6a2;
+  --bad:#e0736c; --bad-soft:#3a201e; --bad-ink:#eb9b95;
+  --warn:#d8a637; --warn-soft:#322913;
+  --info:#5f9bd8; --info-soft:#152535; --info-ink:#8dbbe8;
+  --code-bg:#0c1218; --code-ink:#cfdae4; --code-cm:#5f7382; --code-kw:#f0a35e; --code-str:#8fd0a9;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:none;padding:0}
+a{color:var(--accent-ink);text-decoration:none}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ============ layout ============ */
+.shell{display:grid;grid-template-columns:280px minmax(0,1fr);max-width:1180px;margin:0 auto;gap:0}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;padding:26px 14px 26px 18px;border-right:1px solid var(--line);scrollbar-width:thin}
+.main{min-width:0;padding:30px clamp(16px,4vw,52px) 90px}
+
+/* ============ sidebar ============ */
+.sidehead{padding:0 8px 14px}
+.sidehead b{font-family:var(--disp);font-weight:800;font-size:1.05rem;display:block;margin:.3rem 0 .6rem;line-height:1.2}
+.prog{display:flex;align-items:center;gap:10px}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;flex:1}
+.bar>i{display:block;height:100%;width:0;background:var(--good);border-radius:99px;transition:width .4s ease}
+.prog span{font-family:var(--mono);font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+nav.toc{display:flex;flex-direction:column;gap:3px;margin-top:6px}
+nav.toc a{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;color:var(--ink);font-size:.86rem;line-height:1.25;border:1px solid transparent}
+nav.toc a .n{font-family:var(--mono);font-size:.7rem;color:var(--muted);width:20px;flex:none}
+nav.toc a .chk{margin-left:auto;font-size:.72rem;color:var(--good);opacity:0;flex:none}
+nav.toc a.done .chk{opacity:1}
+nav.toc a:hover{background:var(--surface2)}
+nav.toc a.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+nav.toc a.active .n{color:var(--accent-ink)}
+.sidefoot{margin-top:16px;padding:10px 8px;font-size:.76rem;color:var(--muted);border-top:1px solid var(--line)}
+
+/* ============ hero ============ */
+.hero h1{font-family:var(--disp);font-weight:800;font-size:clamp(1.9rem,4.6vw,2.75rem);line-height:1.05;margin:.35rem 0 .6rem;text-wrap:balance}
+.hero .lead{color:var(--muted);max-width:62ch;margin:0 0 1.2rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:2.4rem}
+.chip{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 11px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+
+/* ============ módulos y lecciones ============ */
+.module{margin:0 0 3.4rem;scroll-margin-top:18px}
+.mhead{margin-bottom:1.4rem;border-bottom:2px solid var(--line);padding-bottom:1rem}
+.mkicker{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mnum{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink);background:var(--accent-soft);padding:3px 10px;border-radius:99px}
+.pill{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:99px}
+.pill.alta{background:var(--bad-soft);color:var(--bad-ink)}
+.pill.media{background:var(--warn-soft);color:var(--warn)}
+.pill.bonus{background:var(--good-soft);color:var(--good-ink)}
+.mhead h2{font-family:var(--disp);font-weight:800;font-size:clamp(1.45rem,3.4vw,1.95rem);margin:.5rem 0 .4rem;line-height:1.12}
+.mlead{color:var(--muted);margin:0;max-width:66ch}
+.lesson{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px clamp(16px,3vw,26px);margin-bottom:1.1rem}
+.lesson h3{font-family:var(--disp);font-weight:700;font-size:1.14rem;margin:.1rem 0 .7rem;display:flex;align-items:baseline;gap:10px;line-height:1.25}
+.lesson h3 .ln{font-family:var(--mono);font-weight:600;font-size:.74rem;color:var(--accent-ink);background:var(--accent-soft);padding:2px 8px;border-radius:8px;flex:none;position:relative;top:-2px}
+.lesson h4{font-family:var(--disp);font-weight:700;font-size:.95rem;margin:1.1rem 0 .35rem}
+.lesson p{margin:.55rem 0}
+.lesson ul,.lesson ol{margin:.5rem 0;padding-left:1.3rem}
+.lesson li{margin:.32rem 0}
+.lesson li>ul{margin:.2rem 0}
+.lesson strong{font-weight:600}
+.lesson code, p code, li code, td code{font-family:var(--mono);font-size:.84em;background:var(--surface2);border:1px solid var(--line);border-radius:6px;padding:1px 5px;white-space:nowrap}
+
+/* ============ código ============ */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.55;margin:.8rem 0}
+pre.code code{background:none;border:none;padding:0;white-space:pre;font-size:1em;color:inherit}
+pre.code i{font-style:normal;color:var(--code-cm)}
+pre.code b{font-weight:600;color:var(--code-kw)}
+pre.code u{text-decoration:none;color:var(--code-str)}
+
+/* ============ callouts ============ */
+.co{display:flex;gap:12px;border-radius:12px;padding:12px 14px;margin:.85rem 0;font-size:.92rem;border:1px solid}
+.co .ico{flex:none;font-size:1rem;line-height:1.5}
+.co b.t{display:block;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.co p{margin:.3rem 0 0}
+.co.key{background:var(--info-soft);border-color:var(--info);color:var(--ink)} .co.key b.t{color:var(--info-ink)}
+.co.trap{background:var(--bad-soft);border-color:var(--bad)} .co.trap b.t{color:var(--bad-ink)}
+.co.talk{background:var(--accent-soft);border-color:var(--accent)} .co.talk b.t{color:var(--accent-ink)}
+.co.bank{background:var(--good-soft);border-color:var(--good)} .co.bank b.t{color:var(--good-ink)}
+
+/* ============ tablas ============ */
+.scroll{overflow-x:auto;margin:.8rem 0}
+table.tbl{border-collapse:collapse;width:100%;font-size:.88rem;min-width:520px}
+table.tbl th{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 12px;border-bottom:2px solid var(--line2);white-space:nowrap}
+table.tbl td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.tbl tr:last-child td{border-bottom:none}
+table.tbl td:first-child{font-weight:600;white-space:nowrap}
+
+/* ============ svg diagramas ============ */
+figure.diag{margin:1rem 0;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:14px}
+figure.diag svg{display:block;width:100%;height:auto}
+figure.diag figcaption{font-size:.78rem;color:var(--muted);margin-top:8px;text-align:center}
+.dg-box{fill:var(--surface);stroke:var(--line2);stroke-width:1.5;rx:8}
+.dg-boxa{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.dg-boxg{fill:var(--good-soft);stroke:var(--good);stroke-width:1.5}
+.dg-boxi{fill:var(--info-soft);stroke:var(--info);stroke-width:1.5}
+.dg-t{fill:var(--ink);font-family:var(--mono);font-size:12px}
+.dg-tb{fill:var(--ink);font-family:var(--mono);font-size:12.5px;font-weight:600}
+.dg-tm{fill:var(--muted);font-family:var(--mono);font-size:10.5px}
+.dg-ln{stroke:var(--line2);stroke-width:1.6;fill:none}
+.dg-lna{stroke:var(--accent);stroke-width:1.6;fill:none}
+.dg-arr{fill:var(--line2)}
+.dg-arra{fill:var(--accent)}
+
+/* ============ definiciones ============ */
+.defs{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--info);border-radius:12px;padding:16px 20px;margin:0 0 1.1rem;box-shadow:var(--shadow)}
+.defs h4{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--info-ink);margin:0 0 .7rem}
+.defs dl{margin:0;display:grid;grid-template-columns:minmax(130px,max-content) 1fr;gap:8px 16px}
+.defs dt{font-weight:600;font-size:.9rem}
+.defs dd{margin:0;font-size:.9rem}
+@media (max-width:640px){.defs dl{grid-template-columns:1fr}.defs dd{margin:-6px 0 8px;color:var(--muted)}}
+
+/* ============ ejercicios / details ============ */
+details.ex{border:1px solid var(--line);border-radius:12px;background:var(--surface2);margin:.8rem 0}
+details.ex summary{cursor:pointer;list-style:none;padding:12px 15px;font-weight:600;font-family:var(--disp);display:flex;align-items:center;gap:8px;font-size:.95rem}
+details.ex summary::-webkit-details-marker{display:none}
+details.ex summary::after{content:"+";margin-left:auto;font-family:var(--mono);color:var(--muted)}
+details.ex[open] summary::after{content:"–"}
+details.ex .inner{padding:0 16px 14px}
+
+/* ============ takeaways + fin de módulo ============ */
+.takeaways{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--good);border-radius:12px;padding:16px 20px;margin:1.2rem 0 .9rem}
+.takeaways h4{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--good-ink);margin:0 0 .5rem}
+.takeaways ul{margin:0;padding-left:1.2rem}
+.takeaways li{margin:.3rem 0;font-size:.92rem}
+.mfoot{display:flex;justify-content:flex-end;margin-top:.4rem}
+.donebtn{font-family:var(--mono);font-size:.78rem;padding:9px 16px;border-radius:99px;border:1.5px solid var(--line2);background:var(--surface);color:var(--muted);transition:all .15s ease}
+.donebtn:hover{border-color:var(--good);color:var(--good-ink)}
+.donebtn.on{background:var(--good);border-color:var(--good);color:#fff}
+
+/* ============ mobile ============ */
+.menubtn{display:none;position:fixed;bottom:18px;right:18px;z-index:30;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;font-size:1.3rem;box-shadow:var(--shadow);align-items:center;justify-content:center}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;inset:0;z-index:20;background:var(--bg);height:100dvh;transform:translateX(-100%);transition:transform .25s ease;border-right:none;padding-top:20px;width:min(320px,86vw);box-shadow:var(--shadow)}
+  .side.open{transform:translateX(0)}
+  .menubtn{display:flex}
+  .main{padding-top:22px}
+}
+@media print{
+  .side,.menubtn,.donebtn{display:none}
+  .shell{display:block}
+  .lesson{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="side" id="side">
+  <div class="sidehead">
+    <div class="eyebrow">Curso teórico</div>
+    <b>Data Engineer en AWS</b>
+    <div class="prog"><div class="bar"><i id="pbar"></i></div><span id="ptxt">0/9</span></div>
+  </div>
+  <nav class="toc" id="toc">
+    <a href="#m1" data-m="m1"><span class="n">01</span>SQL avanzado<span class="chk">✓</span></a>
+    <a href="#m2" data-m="m2"><span class="n">02</span>Python y PySpark<span class="chk">✓</span></a>
+    <a href="#m3" data-m="m3"><span class="n">03</span>AWS Glue y diseño ETL<span class="chk">✓</span></a>
+    <a href="#m4" data-m="m4"><span class="n">04</span>Orquestación<span class="chk">✓</span></a>
+    <a href="#m5" data-m="m5"><span class="n">05</span>Lakehouse y migración<span class="chk">✓</span></a>
+    <a href="#m6" data-m="m6"><span class="n">06</span>Calidad e idempotencia<span class="chk">✓</span></a>
+    <a href="#m7" data-m="m7"><span class="n">07</span>Gobierno de datos<span class="chk">✓</span></a>
+    <a href="#m8" data-m="m8"><span class="n">08</span>IaC y CI/CD<span class="chk">✓</span></a>
+    <a href="#m9" data-m="m9"><span class="n">09</span>Entrevista y banca<span class="chk">✓</span></a>
+  </nav>
+  <div class="sidefoot">Basado en el banco de preguntas de la carpeta <code>preguntas/</code>. El progreso se guarda en este navegador.</div>
+</aside>
+
+<!-- ==================== CONTENIDO ==================== -->
+<main class="main">
+
+<header class="hero">
+  <div class="eyebrow">Pipelines ETL · Lakehouse · Migración Teradata → AWS</div>
+  <h1>Curso teórico de Data Engineering en AWS</h1>
+  <p class="lead">Nueve módulos que explican la teoría detrás de cada tema del banco de preguntas: no solo <em>qué</em> responder, sino <em>por qué</em> las cosas funcionan así. Cada módulo abre con un glosario de definiciones clave y cada lección incluye el concepto, ejemplos y cómo llevarlo a una entrevista.</p>
+  <div class="chips">
+    <span class="chip">SQL · Redshift · Athena</span><span class="chip">PySpark</span><span class="chip">Glue</span><span class="chip">Step Functions</span><span class="chip">Iceberg</span><span class="chip">Lake Formation</span><span class="chip">CDK · GitHub Actions</span><span class="chip">Banca</span>
+  </div>
+</header>
+
+<!-- ==================== MÓDULO 1 ==================== -->
+<section class="module" id="m1">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Módulo 01</span><span class="pill alta">Prioridad alta</span></div>
+    <h2>SQL avanzado: PostgreSQL, Redshift y Athena</h2>
+    <p class="mlead">El SQL es el idioma común de todo el stack. Aquí no basta con saber sintaxis: hay que entender el <strong>orden de ejecución</strong>, cómo se comportan los joins con datos reales, y por qué cada motor (fila vs columnar vs serverless) optimiza distinto.</p>
+  </div>
+
+  <div class="defs">
+    <h4>📖 Definiciones clave del módulo</h4>
+    <dl>
+      <dt>Motor columnar</dt><dd>Guarda cada columna por separado en disco (Redshift, Parquet), en vez de fila por fila (PostgreSQL). Leer 3 columnas de 50 cuesta una fracción del trabajo — ideal para analítica, malo para updates fila a fila.</dd>
+      <dt>Plan de ejecución</dt><dd>La "receta" que el optimizador arma para resolver tu query: en qué orden joinear, qué índices usar, cuántas filas estima cada paso. Se inspecciona con <code>EXPLAIN</code> y es el punto de partida de toda optimización.</dd>
+      <dt>Índice</dt><dd>Estructura auxiliar (típicamente un árbol B) que permite localizar filas sin escanear la tabla completa. Acelera lecturas a cambio de encarecer cada escritura.</dd>
+      <dt>Full scan</dt><dd>Lectura de la tabla completa porque ningún índice o partición aplicó al filtro. A veces es inevitable; muchas veces es el síntoma que buscas en el plan.</dd>
+      <dt>Window function</dt><dd>Función que calcula un valor por fila mirando un grupo de filas relacionadas (su "ventana"), sin colapsarlas como hace <code>GROUP BY</code>.</dd>
+      <dt>Fan-out</dt><dd>Multiplicación accidental de filas en un join porque la llave del otro lado tiene duplicados.</dd>
+      <dt>Partición</dt><dd>Subdivisión física de una tabla según el valor de una columna (ej. una carpeta S3 por día). Filtrar por partición permite ignorar el resto del dato sin leerlo.</dd>
+      <dt>Zone map</dt><dd>El mín/máx que Redshift guarda por bloque de disco: si tu filtro cae fuera de ese rango, el bloque ni se lee. Es lo que la SORTKEY explota.</dd>
+    </dl>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">1.1</span>El orden lógico de un query: por qué WHERE ≠ HAVING</h3>
+    <p>Aunque escribes <code>SELECT</code> primero, el motor evalúa el query en otro orden: <code>FROM</code> → <code>JOIN</code> → <code>WHERE</code> → <code>GROUP BY</code> → <code>HAVING</code> → <code>SELECT</code> → <code>ORDER BY</code> → <code>LIMIT</code>. Entender esta secuencia responde media docena de preguntas de entrevista de golpe.</p>
+    <p>De ahí sale la diferencia clásica: <strong><code>WHERE</code> filtra filas antes de agrupar</strong> (todavía no existen los agregados), mientras que <strong><code>HAVING</code> filtra después del <code>GROUP BY</code></strong>, sobre los resultados agregados. Por eso <code>HAVING SUM(monto) &gt; 1000</code> es válido y <code>WHERE SUM(monto) &gt; 1000</code> no.</p>
+    <pre class="code"><code><i>-- Clientes con más de 10 transacciones en 2025, solo depósitos:</i>
+SELECT cliente_id, COUNT(*) AS n
+FROM transacciones
+WHERE tipo = <u>'DEPOSITO'</u> AND fecha &gt;= <u>'2025-01-01'</u>   <i>-- filtra ANTES de agrupar</i>
+GROUP BY cliente_id
+HAVING COUNT(*) &gt; 10;                              <i>-- filtra DESPUÉS, sobre el agregado</i></code></pre>
+    <div class="co key"><span class="ico">💡</span><div><b class="t">Concepto clave</b>Filtrar temprano en <code>WHERE</code> no es solo estilo: reduce las filas que llegan a la agregación y al shuffle. La regla "filtra y proyecta lo antes posible" se repite en SQL, Spark y Athena — es el mismo principio en los tres.</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">1.2</span>JOINs y el fan-out: el bug silencioso más común</h3>
+    <p>Los tipos de join (<code>INNER</code>, <code>LEFT</code>, <code>RIGHT</code>, <code>FULL OUTER</code>, <code>CROSS</code>) definen qué filas sobreviven cuando no hay match. Eso es nivel junior. El punto semisenior es qué pasa <strong>cuando hay más de un match</strong>.</p>
+    <p>Si haces <code>LEFT JOIN</code> de transacciones contra una tabla de clientes donde un <code>cliente_id</code> aparece dos veces (por ejemplo, por un histórico mal deduplicado), <strong>cada transacción de ese cliente se duplica</strong>. Esto se llama <em>fan-out</em>: el join multiplica filas y de pronto tus totales monetarios no cuadran — en banca, un incidente.</p>
+    <h4>Cómo detectarlo y prevenirlo</h4>
+    <ul>
+      <li>Comparar <code>COUNT(*)</code> antes y después del join: si creció y esperabas relación 1:1, hay fan-out.</li>
+      <li>Validar unicidad de la llave del lado "uno": <code>GROUP BY clave HAVING COUNT(*) &gt; 1</code>.</li>
+      <li>Deduplicar la dimensión antes del join (lección 1.3) o convertir la validación en una regla de calidad automática (módulo 6).</li>
+    </ul>
+    <div class="co talk"><span class="ico">🎯</span><div><b class="t">En la entrevista</b>Cuando pregunten por joins, menciona el fan-out sin que te lo pidan: "y siempre valido unicidad de la llave, porque un LEFT JOIN con duplicados multiplica filas y rompe los cuadres". Eso separa a quien ha operado datos reales de quien solo estudió sintaxis.</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">1.3</span>Window functions: agregar sin colapsar</h3>
+    <p><code>GROUP BY</code> colapsa las filas de cada grupo en una sola. Una <strong>window function</strong> hace el cálculo sobre un grupo (la "ventana") pero <strong>conserva cada fila individual</strong>, añadiendo el resultado como una columna más. La ventana se define con <code>OVER (PARTITION BY ... ORDER BY ...)</code>: <code>PARTITION BY</code> dice cómo se agrupan las filas y <code>ORDER BY</code> en qué orden se recorren dentro del grupo.</p>
+    <h4>Las cuatro familias que debes dominar</h4>
+    <ul>
+      <li><strong>Numeración y ranking</strong> — <code>ROW_NUMBER()</code>, <code>RANK()</code>, <code>DENSE_RANK()</code>: para deduplicar y para "top N por grupo".</li>
+      <li><strong>Desplazamiento</strong> — <code>LAG()</code> / <code>LEAD()</code>: mirar la fila anterior o siguiente (variación de saldo mes a mes, detección de gaps).</li>
+      <li><strong>Acumulados</strong> — <code>SUM() OVER (PARTITION BY ... ORDER BY ...)</code>: running totals.</li>
+      <li><strong>Agregado por ventana</strong> — <code>AVG() OVER (PARTITION BY ...)</code> sin ORDER BY: comparar cada fila contra el promedio de su grupo.</li>
+    </ul>
+    <p>El patrón de <strong>deduplicación</strong> es el más usado en pipelines: quedarte con el registro más reciente por clave de negocio.</p>
+    <pre class="code"><code>SELECT * FROM (
+  SELECT *,
+         ROW_NUMBER() OVER (PARTITION BY cliente_id
+                            ORDER BY fecha_actualizacion DESC) AS rn
+  FROM clientes_staging
+) t
+WHERE rn = 1;   <i>-- una fila por cliente: la más reciente</i></code></pre>
+    <h4>ROW_NUMBER vs RANK vs DENSE_RANK: qué pasa con los empates</h4>
+    <p>Con valores 100, 90, 90, 80 las tres funciones difieren solo en los empates:</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Valor</th><th>ROW_NUMBER()</th><th>RANK()</th><th>DENSE_RANK()</th></tr>
+      <tr><td>100</td><td>1</td><td>1</td><td>1</td></tr>
+      <tr><td>90</td><td>2</td><td>2</td><td>2</td></tr>
+      <tr><td>90</td><td>3 (arbitrario)</td><td>2 (empata)</td><td>2 (empata)</td></tr>
+      <tr><td>80</td><td>4</td><td>4 (salta el 3)</td><td>3 (no salta)</td></tr>
+    </table></div>
+    <p>Regla mnemotécnica: <code>ROW_NUMBER</code> nunca repite, <code>RANK</code> repite y salta, <code>DENSE_RANK</code> repite y no salta.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">1.4</span>CTEs, anti-joins y la trampa de NOT IN</h3>
+    <p>Un <strong>CTE</strong> (<code>WITH nombre AS (...)</code>) es una subconsulta con nombre. Aporta legibilidad (el query se lee de arriba hacia abajo como pasos), reutilización dentro del mismo query, y permite recursión para jerarquías (organigramas, planes de cuentas). Dato fino: en PostgreSQL 12+ los CTEs ya se pueden "inline" en el plan — antes eran una barrera de optimización que materializaba el resultado siempre.</p>
+    <h4>El anti-join: "registros de A que no están en B"</h4>
+    <p>Hay tres maneras de resolverlo, y una es una trampa:</p>
+    <pre class="code"><code><i>-- 1) LEFT JOIN + IS NULL: clásico y legible</i>
+SELECT a.* FROM a LEFT JOIN b ON a.id = b.id WHERE b.id IS NULL;
+
+<i>-- 2) NOT EXISTS: generalmente el mejor plan, semántica clara con NULLs</i>
+SELECT a.* FROM a WHERE NOT EXISTS (SELECT 1 FROM b WHERE b.id = a.id);
+
+<i>-- 3) NOT IN: ⚠ PELIGRO</i>
+SELECT a.* FROM a WHERE a.id NOT IN (SELECT id FROM b);</code></pre>
+    <div class="co trap"><span class="ico">⚠️</span><div><b class="t">Pregunta trampa</b>Si la subconsulta de <code>NOT IN</code> devuelve <strong>algún NULL</strong>, el resultado completo es vacío. La razón: <code>id NOT IN (1, 2, NULL)</code> se evalúa como <code>id≠1 AND id≠2 AND id≠NULL</code>, y comparar con NULL da <code>UNKNOWN</code> — nunca TRUE. Por eso el estándar profesional es <code>NOT EXISTS</code>.</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">1.5</span>Método para optimizar un query lento</h3>
+    <p>Ante "¿cómo optimizarías un query lento?" no listes trucos sueltos: describe un <strong>método</strong>. Este guion funciona en cualquier motor:</p>
+    <ol>
+      <li><strong>Mirar el plan de ejecución</strong> — <code>EXPLAIN ANALYZE</code> en PostgreSQL, <code>EXPLAIN</code> en Redshift/Athena. Nunca optimices a ciegas.</li>
+      <li><strong>Buscar los sospechosos</strong> — full scans donde esperabas uso de índice/partición, joins que redistribuyen datos masivamente, estimaciones de filas muy alejadas de la realidad.</li>
+      <li><strong>Atacar según el motor</strong> — índices en PostgreSQL; dist/sort keys en Redshift (lección 1.6); particiones y Parquet en Athena (lección 1.7).</li>
+      <li><strong>Filtrar y proyectar temprano</strong> — solo las columnas necesarias, filtros lo más cerca posible de la fuente.</li>
+      <li><strong>Estadísticas actualizadas</strong> — <code>ANALYZE</code>: el optimizador decide con estadísticas; si están viejas, decide mal.</li>
+      <li><strong>No romper índices con funciones</strong> — <code>WHERE DATE(fecha) = '2025-01-01'</code> impide usar el índice sobre <code>fecha</code>; reescribe como rango: <code>fecha &gt;= '2025-01-01' AND fecha &lt; '2025-01-02'</code>.</li>
+    </ol>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">1.6</span>Redshift por dentro: DISTKEY, SORTKEY y por qué odia los UPDATEs</h3>
+    <p>Redshift es un warehouse <strong>columnar y distribuido</strong>: los datos viven repartidos entre nodos, y cada columna se guarda por separado. De esas dos decisiones de diseño salen todas sus reglas de juego.</p>
+    <h4>DISTKEY: dónde vive cada fila</h4>
+    <p>La <strong>distribution key</strong> decide en qué nodo cae cada fila. Si dos tablas grandes se joinean por <code>cliente_id</code> y ambas distribuyen por esa columna, las filas que hacen match ya están en el mismo nodo y el join es local. Si no, Redshift tiene que <strong>redistribuir datos por la red</strong> en cada query (broadcast o shuffle) — el costo oculto más común. Estilos: <code>KEY</code> (por columna), <code>ALL</code> (copia completa en cada nodo — solo dimensiones chicas), <code>EVEN</code> (round-robin), <code>AUTO</code>.</p>
+    <h4>SORTKEY: en qué orden se escribe en disco</h4>
+    <p>La <strong>sort key</strong> define el orden físico. Redshift guarda por bloque el mínimo y máximo de cada columna (<em>zone maps</em>): si filtras <code>WHERE fecha = ayer</code> y la tabla está ordenada por fecha, salta directamente los bloques que no contienen esa fecha. Por eso la sort key típica en tablas de hechos es la fecha.</p>
+    <h4>Por qué UPDATE/DELETE frecuentes son mala idea</h4>
+    <p>Al ser columnar y escribir por bloques inmutables, un DELETE solo <strong>marca filas como fantasma</strong> y un UPDATE es delete + insert. El espacio se recupera con <code>VACUUM</code>. El patrón correcto para cargas es <strong>staging + MERGE</strong> (o delete-insert por partición de fecha): cargas lo nuevo a una tabla staging con <code>COPY</code> y aplicas el upsert en bloque.</p>
+    <h4>Carga masiva: siempre COPY</h4>
+    <p><code>COPY</code> desde S3 carga en paralelo usando todos los slices del cluster. Nunca INSERTs fila a fila (ordenes de magnitud más lento). Mejor con Parquet o con archivos divididos en múltiplos del número de slices. Y para consultar S3 sin cargar nada: <strong>Redshift Spectrum</strong>.</p>
+    <div class="co key"><span class="ico">💡</span><div><b class="t">Concepto clave</b>DISTKEY responde "¿cómo evito mover datos entre nodos en el join?" y SORTKEY responde "¿cómo evito leer bloques que no necesito?". Si puedes explicar ambas en esos términos, la pregunta está ganada.</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">1.7</span>Athena: el motor que cobra por lo que escanea</h3>
+    <p>Athena es <strong>Presto/Trino serverless</strong>: consulta archivos en S3 directamente, sin cluster que administrar, y cobra <strong>por datos escaneados</strong> (~$5 por TB). Esa forma de cobrar define toda la optimización: <em>optimizar Athena = escanear menos bytes</em>.</p>
+    <ul>
+      <li><strong>Parquet en vez de CSV/JSON</strong> — columnar: si pides 3 columnas de 50, solo lee esas 3; además comprime ~10x.</li>
+      <li><strong>Particionamiento</strong> — las particiones son subcarpetas en S3 (<code>year=2025/month=08/day=30/</code>) registradas en el Data Catalog. Filtrar por partición evita escanear el resto del histórico.</li>
+      <li><strong>Archivos de tamaño sano</strong> — miles de archivos de 1MB matan el rendimiento por overhead de apertura y listado; apunta a 128MB+ por archivo (módulo 3, lección 3.5).</li>
+      <li><strong><code>SELECT</code> solo lo necesario</strong> — <code>SELECT *</code> en columnar es pagar por columnas que no usas.</li>
+    </ul>
+    <h4>Partition projection: particiones sin crawler</h4>
+    <p>Normalmente cada partición nueva debe registrarse en el Catalog (<code>MSCK REPAIR TABLE</code> o un crawler). Con <strong>partition projection</strong> configuras el patrón (ej. "hay una partición por día desde 2020") y Athena <em>calcula</em> las particiones existentes sin consultarlas al Catalog: más barato, sin crawler, sin latencia de registro. Ideal para particiones por fecha.</p>
+  </article>
+
+  <details class="ex">
+    <summary>🏋️ Ejercicios del módulo (practícalos en un editor SQL)</summary>
+    <div class="inner">
+      <ol>
+        <li><strong>Segundo salario más alto por departamento</strong> — <code>DENSE_RANK()</code> por departamento ordenado por salario DESC, filtrar <code>rn = 2</code>.</li>
+        <li><strong>Clientes con transacciones en meses consecutivos</strong> — <code>LAG(mes)</code> por cliente y comparar diferencia de 1 mes.</li>
+        <li><strong>Deduplicar quedándote con el más reciente</strong> — patrón <code>ROW_NUMBER()</code> de la lección 1.3.</li>
+        <li><strong>Total acumulado de depósitos por cliente</strong> — <code>SUM(monto) OVER (PARTITION BY cliente_id ORDER BY fecha)</code>.</li>
+        <li><strong>Detectar gaps de fechas</strong> — <code>generate_series</code> + LEFT JOIN, o <code>LAG(fecha)</code> y diferencia &gt; 1 día.</li>
+        <li><strong>Pivot simple</strong> — <code>SUM(CASE WHEN tipo='X' THEN monto END)</code> por columna.</li>
+      </ol>
+    </div>
+  </details>
+
+  <div class="takeaways">
+    <h4>Lo esencial del módulo</h4>
+    <ul>
+      <li>WHERE filtra antes de agrupar, HAVING después: es consecuencia del orden lógico de ejecución.</li>
+      <li>Un join con llaves duplicadas multiplica filas (fan-out) — valida unicidad siempre.</li>
+      <li>Window functions = agregar sin colapsar filas; ROW_NUMBER + PARTITION BY es EL patrón de dedup.</li>
+      <li>NOT IN con NULLs devuelve vacío; usa NOT EXISTS.</li>
+      <li>Redshift: DISTKEY evita mover datos en joins, SORTKEY evita leer bloques; cargas con COPY + staging/MERGE.</li>
+      <li>Athena cobra por bytes escaneados: Parquet + particiones + archivos grandes + columnas mínimas.</li>
+    </ul>
+  </div>
+  <div class="mfoot"><button class="donebtn" data-m="m1">✓ Marcar módulo completado</button></div>
+</section>
+<!-- ==================== MÓDULO 2 ==================== -->
+<section class="module" id="m2">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Módulo 02</span><span class="pill alta">Prioridad alta</span></div>
+    <h2>Python y PySpark</h2>
+    <p class="mlead">Python es la herramienta; Spark es el motor distribuido. La teoría que más evalúan no es sintaxis, sino el <strong>modelo de ejecución</strong>: qué corre dónde, cuándo se mueve el dato por la red, y por qué eso define el rendimiento.</p>
+  </div>
+
+  <div class="defs">
+    <h4>📖 Definiciones clave del módulo</h4>
+    <dl>
+      <dt>Driver</dt><dd>El proceso que ejecuta tu script de Spark: interpreta el código, arma el plan y coordina a los executors. No procesa datos masivos — por eso <code>collect()</code> lo revienta.</dd>
+      <dt>Executor</dt><dd>Proceso trabajador que ejecuta tasks sobre particiones del dato. Muchos executors en paralelo = la potencia de Spark.</dd>
+      <dt>Partición (Spark)</dt><dd>El trozo del DataFrame que procesa un task. Es la unidad de paralelismo: 200 particiones = hasta 200 tasks simultáneos.</dd>
+      <dt>DAG</dt><dd>Grafo dirigido acíclico de operaciones: el "plan de vuelo" que Spark construye con tus transformaciones antes de ejecutar nada.</dd>
+      <dt>Lazy evaluation</dt><dd>No ejecutar nada hasta que una acción lo exija. Permite al optimizador ver el plan completo y mejorarlo antes de gastar un solo ciclo.</dd>
+      <dt>Catalyst / Tungsten</dt><dd>El optimizador de planes (Catalyst) y el motor de ejecución y memoria (Tungsten) de Spark. Trabajan solo si usas la API de DataFrames — las UDFs de Python los dejan ciegos.</dd>
+      <dt>Shuffle</dt><dd>Redistribución de datos entre executors por red y disco, necesaria cuando todas las filas de una clave deben juntarse. La operación más cara de Spark.</dd>
+      <dt>Skew</dt><dd>Desbalance de datos: una clave concentra la mayoría de filas y su task tarda mucho más que el resto.</dd>
+      <dt>Straggler</dt><dd>El task rezagado que retiene a todo el stage: 199 tasks terminan en segundos, uno tarda 20 minutos, el job dura 20 minutos.</dd>
+      <dt>Linaje</dt><dd>La cadena de transformaciones que produjo un DataFrame. Sin <code>cache()</code>, cada acción lo recomputa completo desde la fuente.</dd>
+      <dt>OOM</dt><dd>Out Of Memory: el proceso pidió más memoria de la que tiene. En Spark casi siempre por collect al driver, skew o particiones gigantes.</dd>
+    </dl>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">2.1</span>El Python que importa en un pipeline</h3>
+    <h4>Estructuras de datos: elegir por costo de búsqueda</h4>
+    <p>Lista (mutable, ordenada), tupla (inmutable — por eso puede ser clave de diccionario), set (elementos únicos), dict (clave→valor). El criterio de Data Engineer: <strong>buscar en una lista es O(n), buscar en un set o dict es O(1)</strong>. Si validas 10 millones de registros contra un catálogo de códigos, hazlo contra un <code>set</code>, no con <code>in</code> sobre una lista — la diferencia es de horas a segundos.</p>
+    <h4>Generadores: procesar sin cargar todo en memoria</h4>
+    <p>Una función con <code>yield</code> produce valores <strong>bajo demanda</strong> en vez de construir la lista completa. Es la misma idea de "lazy evaluation" que verás en Spark: no materialices lo que puedes ir entregando de a poco. Ejemplo típico: recorrer un archivo de 10GB línea por línea (<code>for line in f</code>) en vez de <code>f.readlines()</code>, que intentaría cargar los 10GB a RAM.</p>
+    <h4>Errores y context managers</h4>
+    <ul>
+      <li><code>try/except</code> siempre con excepción específica (nunca <code>except:</code> pelado, que se traga hasta el Ctrl+C); <code>else</code> para el camino feliz; <code>finally</code> para limpieza.</li>
+      <li>En un pipeline el manejo va más allá de atrapar: <strong>loguear con contexto</strong> (qué archivo, qué registro), decidir si reintentar, mandar a cuarentena o abortar (módulo 6).</li>
+      <li><code>with</code> (context manager) garantiza el cierre de archivos/conexiones/transacciones aunque explote una excepción. Se implementa con <code>__enter__</code>/<code>__exit__</code> o el decorador <code>@contextmanager</code>.</li>
+    </ul>
+    <h4>Proyecto ETL testeable</h4>
+    <p>La estructura que permite testear: separar <strong>extracción / transformación / carga</strong>, con las transformaciones como <strong>funciones puras</strong> que reciben y devuelven DataFrames. La configuración vive fuera del código (variables de entorno, argumentos del job). Así los tests de pytest ejercitan las transformaciones con datos sintéticos sin tocar AWS, y <code>moto</code> mockea S3/DynamoDB cuando hace falta (ver módulo 8, lección 8.5).</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">2.2</span>pandas vs PySpark: el límite de una sola máquina</h3>
+    <p>pandas es excelente mientras el dataset <strong>quepa en la memoria de una máquina</strong> (hasta unos pocos GB). Es single-node: un solo proceso, una sola RAM. Cuando el dato supera la RAM o necesitas paralelismo real, pasas a Spark, que reparte los datos en <strong>particiones</strong> procesadas por muchos ejecutores a la vez.</p>
+    <p>El kit habitual: <code>pandas</code> para lo que cabe en memoria, <code>boto3</code> para hablar con AWS, <code>sqlalchemy/psycopg2</code> para bases de datos, y <code>awswrangler</code> (de AWS Labs) que lee/escribe S3, Athena y Redshift en una línea — vale la pena mencionarla.</p>
+    <div class="co talk"><span class="ico">🎯</span><div><b class="t">En la entrevista</b>"¿Cuándo dejarías pandas?" → "Cuando el dato no cabe en la memoria de un nodo o el tiempo de proceso deja de ser aceptable. Antes de saltar a Spark reviso si puedo reducir el dato (filtrar, agregar en la fuente); Spark agrega complejidad operativa que solo se justifica con volumen real."</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">2.3</span>Arquitectura de Spark: driver, executors y particiones</h3>
+    <p>Un job de Spark tiene dos tipos de procesos. El <strong>driver</strong> ejecuta tu script: interpreta las transformaciones, construye el plan (DAG) y coordina. Los <strong>executors</strong> hacen el trabajo pesado: cada uno procesa <em>tasks</em> sobre particiones del dato, en paralelo. Un <strong>cluster manager</strong> (YARN, Kubernetes, o el manejado de Glue) reparte los recursos.</p>
+    <figure class="diag">
+      <svg viewBox="0 0 660 230" role="img" aria-label="Diagrama de arquitectura Spark: driver coordinando tres executors">
+        <rect x="10" y="70" width="150" height="90" rx="10" class="dg-boxa"/>
+        <text x="85" y="103" text-anchor="middle" class="dg-tb">DRIVER</text>
+        <text x="85" y="122" text-anchor="middle" class="dg-tm">tu script · DAG</text>
+        <text x="85" y="138" text-anchor="middle" class="dg-tm">coordinación</text>
+        <line x1="160" y1="115" x2="240" y2="45" class="dg-lna"/>
+        <line x1="160" y1="115" x2="240" y2="115" class="dg-lna"/>
+        <line x1="160" y1="115" x2="240" y2="185" class="dg-lna"/>
+        <polygon points="240,45 231,42 233,51" class="dg-arra"/>
+        <polygon points="240,115 231,110 231,120" class="dg-arra"/>
+        <polygon points="240,185 231,179 233,188" class="dg-arra"/>
+        <g>
+          <rect x="245" y="15" width="180" height="60" rx="10" class="dg-box"/>
+          <text x="335" y="40" text-anchor="middle" class="dg-tb">EXECUTOR 1</text>
+          <text x="335" y="58" text-anchor="middle" class="dg-tm">tasks → particiones 1–4</text>
+          <rect x="245" y="85" width="180" height="60" rx="10" class="dg-box"/>
+          <text x="335" y="110" text-anchor="middle" class="dg-tb">EXECUTOR 2</text>
+          <text x="335" y="128" text-anchor="middle" class="dg-tm">tasks → particiones 5–8</text>
+          <rect x="245" y="155" width="180" height="60" rx="10" class="dg-box"/>
+          <text x="335" y="180" text-anchor="middle" class="dg-tb">EXECUTOR 3</text>
+          <text x="335" y="198" text-anchor="middle" class="dg-tm">tasks → particiones 9–12</text>
+        </g>
+        <g>
+          <rect x="475" y="70" width="170" height="90" rx="10" class="dg-boxi"/>
+          <text x="560" y="103" text-anchor="middle" class="dg-tb">DATOS (S3)</text>
+          <text x="560" y="122" text-anchor="middle" class="dg-tm">divididos en</text>
+          <text x="560" y="138" text-anchor="middle" class="dg-tm">particiones</text>
+        </g>
+        <line x1="425" y1="45" x2="500" y2="80" class="dg-ln"/>
+        <line x1="425" y1="115" x2="475" y2="115" class="dg-ln"/>
+        <line x1="425" y1="185" x2="500" y2="150" class="dg-ln"/>
+      </svg>
+      <figcaption>El driver reparte tasks; cada executor procesa sus particiones en paralelo. <code>collect()</code> trae datos de vuelta al driver — con datos grandes, lo revienta.</figcaption>
+    </figure>
+    <div class="co trap"><span class="ico">⚠️</span><div><b class="t">Error común</b><code>collect()</code>, <code>toPandas()</code> y similares concentran TODO el dato distribuido en el driver. Con un DataFrame grande es la causa #1 de OOM. Úsalos solo sobre resultados ya agregados y chicos.</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">2.4</span>Lazy evaluation: transformaciones, acciones y el optimizador</h3>
+    <p>Las <strong>transformaciones</strong> (<code>select</code>, <code>filter</code>, <code>join</code>, <code>groupBy</code>, <code>withColumn</code>) no ejecutan nada: solo van construyendo el plan (un DAG de operaciones). La ejecución real se dispara con una <strong>acción</strong>: <code>count</code>, <code>write</code>, <code>collect</code>, <code>show</code>.</p>
+    <p>¿Por qué diseñarlo así? Porque al conocer el plan <em>completo</em> antes de ejecutar, el optimizador <strong>Catalyst</strong> puede reordenarlo: empujar filtros hacia la fuente (<em>predicate pushdown</em> — filtrar al leer el Parquet, no después), leer solo las columnas usadas (<em>column pruning</em>), y elegir estrategias de join. Tú escribes el "qué"; Catalyst decide el "cómo".</p>
+    <div class="co key"><span class="ico">💡</span><div><b class="t">Concepto clave</b>Consecuencia práctica de la pereza: si un job "falla en el <code>write</code>", el error pudo originarse en cualquier transformación anterior — recién ahí se ejecutó todo. Y si llamas dos acciones sobre el mismo DataFrame sin cache, el linaje completo se recomputa dos veces (lección 2.6).</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">2.5</span>Shuffle, narrow vs wide y el problema del skew</h3>
+    <p>La pregunta central de rendimiento en Spark es: <strong>¿esta operación necesita mover datos entre executors?</strong></p>
+    <ul>
+      <li><strong>Narrow transformations</strong> (<code>filter</code>, <code>map</code>, <code>withColumn</code>): cada partición de salida se calcula de una sola partición de entrada. Cero movimiento de datos. Baratas.</li>
+      <li><strong>Wide transformations</strong> (<code>groupBy</code>, <code>join</code>, <code>distinct</code>, <code>repartition</code>): necesitan juntar todas las filas de una misma clave en el mismo lugar → <strong>shuffle</strong>: redistribuir datos por red y disco entre todos los executors. Es la operación cara de Spark.</li>
+    </ul>
+    <p>Optimizar Spark ≈ minimizar y aligerar shuffles: <strong>filtrar antes del join</strong> (menos filas viajan), <strong>broadcast join</strong> cuando una tabla es chica (lección 2.6), y evitar <code>distinct</code>/<code>groupBy</code> innecesarios.</p>
+    <h4>Data skew: cuando una clave se lleva todo</h4>
+    <p>En el shuffle, todas las filas de una clave van al mismo task. Si una clave concentra la mayoría de filas (el cliente corporativo con millones de transacciones, el valor NULL), ese task tarda 10x más que el resto: el job entero espera a un solo rezagado (<em>straggler</em>). En la Spark UI se ve como un stage donde todos los tasks terminan en segundos y uno tarda 20 minutos.</p>
+    <p>Soluciones, de la más simple a la más manual:</p>
+    <ol>
+      <li><strong>AQE (Adaptive Query Execution)</strong> — activo por defecto en Spark 3: detecta particiones sesgadas al vuelo y las subdivide.</li>
+      <li><strong>Broadcast join</strong> — si la otra tabla es chica, no hay shuffle y el skew deja de importar.</li>
+      <li><strong>Salting</strong> — agregar un sufijo aleatorio a la clave caliente (<code>clave_7</code>) para repartirla en N tasks, y agregar en dos fases (primero por clave+sal, luego por clave).</li>
+    </ol>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">2.6</span>Las palancas: repartition, coalesce, cache y broadcast</h3>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Herramienta</th><th>Qué hace</th><th>Cuándo usarla</th></tr>
+      <tr><td><code>repartition(n)</code></td><td>Shuffle completo; puede subir o bajar el número de particiones y las balancea</td><td>Repartir carga antes de una operación pesada, o balancear tras un filtro muy selectivo</td></tr>
+      <tr><td><code>coalesce(n)</code></td><td>Fusiona particiones <strong>sin shuffle</strong>; solo puede bajar</td><td>Antes de escribir a S3, para no generar miles de archivos chicos</td></tr>
+      <tr><td><code>cache()</code> / <code>persist()</code></td><td>Materializa el DataFrame (memoria y/o disco) para no recomputar el linaje</td><td>Cuando el mismo DataFrame alimenta varias acciones (validaciones + escritura)</td></tr>
+      <tr><td><code>broadcast(df)</code></td><td>Copia la tabla chica completa a cada executor: el join se vuelve local, sin shuffle</td><td>Join de tabla grande contra dimensión chica (MBs)</td></tr>
+    </table></div>
+    <p>El caso de examen: <strong>"join de 500GB contra 50MB"</strong> → broadcast join. La tabla de 50MB viaja una vez a cada executor y la de 500GB no se mueve. Spark lo hace solo si la chica está bajo <code>autoBroadcastJoinThreshold</code> (10MB por defecto); por encima, fuérzalo explícito:</p>
+    <pre class="code"><code>from pyspark.sql import functions as F
+resultado = df_transacciones.join(F.broadcast(df_sucursales), <u>"sucursal_id"</u>)</code></pre>
+    <p>Sobre <code>cache()</code>: no es gratis (ocupa memoria de executors) y no es magia — solo paga cuando hay <em>reutilización</em> real. <code>persist(StorageLevel.MEMORY_AND_DISK)</code> permite elegir el nivel si no cabe en RAM.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">2.7</span>DataFrames, RDDs y por qué las UDFs de Python son veneno</h3>
+    <p><strong>DataFrame</strong> es la API declarativa: describe operaciones sobre columnas y deja que Catalyst + Tungsten optimicen y ejecuten en la JVM. <strong>RDD</strong> es la API original de bajo nivel, sin optimizador — hoy casi no se usa directamente.</p>
+    <p>Una <strong>UDF de Python</strong> rompe ese modelo: Catalyst no puede ver dentro de tu función (adiós optimizaciones) y cada fila debe <strong>serializarse de la JVM a un proceso Python y de vuelta</strong>. El orden de preferencia:</p>
+    <ol>
+      <li><strong>Funciones nativas</strong> de <code>pyspark.sql.functions</code> — cubren el 95% de los casos y corren dentro de la JVM.</li>
+      <li><strong>pandas UDFs</strong> (vectorizadas con Arrow) — si de verdad necesitas lógica Python, procesan lotes en vez de filas.</li>
+      <li><strong>UDF fila a fila</strong> — último recurso.</li>
+    </ol>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">2.8</span>Un job real: leer, transformar, escribir — y el ejercicio de examen</h3>
+    <pre class="code"><code>from pyspark.sql import functions as F
+
+df = spark.read.parquet(<u>"s3://bucket/raw/transacciones/"</u>)
+
+df_clean = (df
+    .filter(F.col(<u>"monto"</u>) &gt; 0)
+    .withColumn(<u>"fecha_proceso"</u>, F.current_date())
+    .dropDuplicates([<u>"transaccion_id"</u>]))
+
+(df_clean.write
+    .mode(<u>"overwrite"</u>)
+    .partitionBy(<u>"year"</u>, <u>"month"</u>)
+    .parquet(<u>"s3://bucket/curated/transacciones/"</u>))</code></pre>
+    <p>Detalle que suma puntos: los modos de escritura. <code>append</code> agrega (y duplica si relanzas), <code>overwrite</code> por defecto borra TODO el destino. La configuración <code>spark.sql.sources.partitionOverwriteMode=dynamic</code> hace que overwrite reemplace <strong>solo las particiones presentes en el DataFrame</strong> — la base de los reprocesos idempotentes (módulo 6).</p>
+    <h4>El ejercicio típico: total mensual y variación vs mes anterior</h4>
+    <pre class="code"><code>from pyspark.sql import functions as F, Window
+
+mensual = (df.groupBy(<u>"cliente_id"</u>, F.date_format(<u>"fecha"</u>, <u>"yyyy-MM"</u>).alias(<u>"mes"</u>))
+             .agg(F.sum(<u>"monto"</u>).alias(<u>"total"</u>)))
+
+w = Window.partitionBy(<u>"cliente_id"</u>).orderBy(<u>"mes"</u>)
+
+resultado = (mensual
+    .withColumn(<u>"total_prev"</u>, F.lag(<u>"total"</u>).over(w))
+    .withColumn(<u>"variacion_pct"</u>,
+        F.round((F.col(<u>"total"</u>) - F.col(<u>"total_prev"</u>)) / F.col(<u>"total_prev"</u>) * 100, 2)))</code></pre>
+    <p>Fíjate que es la <em>misma</em> teoría del módulo 1: agregación + window function con <code>LAG</code>. Spark y SQL comparten el modelo mental.</p>
+    <h4>Debug de un job lento o con OOM</h4>
+    <p>Guion: abrir la <strong>Spark UI</strong> → mirar stages y tasks → buscar stragglers (skew), spill a disco, shuffles gigantes. Causas típicas: skew, <code>collect()</code> de datos grandes, particiones demasiado grandes (subir <code>spark.sql.shuffle.partitions</code> o repartition), cache innecesario. En Glue: métricas de CloudWatch + Spark UI habilitado.</p>
+  </article>
+
+  <div class="takeaways">
+    <h4>Lo esencial del módulo</h4>
+    <ul>
+      <li>Driver coordina, executors procesan particiones; <code>collect()</code> concentra todo en el driver.</li>
+      <li>Transformaciones lazy + acciones: Catalyst optimiza el plan completo antes de ejecutar.</li>
+      <li>El shuffle (wide transformations) es lo caro; skew = una clave caliente crea un straggler → AQE, broadcast, salting.</li>
+      <li><code>coalesce</code> antes de escribir; <code>repartition</code> para balancear; <code>cache</code> solo con reutilización real.</li>
+      <li>Funciones nativas &gt; pandas UDF &gt; UDF fila a fila.</li>
+      <li><code>partitionOverwriteMode=dynamic</code>: overwrite solo de las particiones tocadas — clave para idempotencia.</li>
+    </ul>
+  </div>
+  <div class="mfoot"><button class="donebtn" data-m="m2">✓ Marcar módulo completado</button></div>
+</section>
+
+<!-- ==================== MÓDULO 3 ==================== -->
+<section class="module" id="m3">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Módulo 03</span><span class="pill alta">Prioridad alta</span></div>
+    <h2>AWS Glue y diseño de pipelines ETL</h2>
+    <p class="mlead">Glue es el caballo de batalla del ETL serverless en AWS. La teoría importante: qué componente resuelve qué problema, y los principios de diseño de pipelines (capas, incrementalidad, formatos) que aplican con cualquier herramienta.</p>
+  </div>
+
+  <div class="defs">
+    <h4>📖 Definiciones clave del módulo</h4>
+    <dl>
+      <dt>Serverless</dt><dd>El proveedor administra los servidores por ti: no dimensionas ni parchas máquinas, y pagas por uso. Glue, Athena, Lambda y Step Functions lo son.</dd>
+      <dt>DPU</dt><dd>Data Processing Unit: la unidad de cómputo con la que Glue mide y cobra (4 vCPU + 16GB). Un job de 10 DPUs durante 1 hora = 10 DPU-horas.</dd>
+      <dt>Metastore</dt><dd>Base de datos de <em>metadatos</em>: qué tablas existen, con qué esquema, particiones y ubicación física. El Glue Data Catalog es el metastore de AWS.</dd>
+      <dt>Crawler</dt><dd>Proceso que escanea archivos, infiere su esquema y registra/actualiza tablas y particiones en el Catalog.</dd>
+      <dt>Job bookmark</dt><dd>Estado que Glue guarda entre corridas para procesar solo los datos nuevos (rutas S3 ya vistas, columnas de avance en JDBC).</dd>
+      <dt>Watermark</dt><dd>Marca de progreso de una carga incremental: "el último <code>fecha_actualizacion</code> que procesé". La próxima corrida pide todo lo posterior.</dd>
+      <dt>CDC</dt><dd>Change Data Capture: capturar los inserts/updates/deletes directamente del log de transacciones de la base fuente (DMS, Debezium), en vez de re-consultar tablas.</dd>
+      <dt>Schema evolution</dt><dd>Los cambios de esquema de la fuente a lo largo del tiempo (columnas nuevas, tipos que cambian) y la política con que el pipeline los absorbe.</dd>
+      <dt>Predicate pushdown</dt><dd>Empujar el filtro hasta la lectura misma del archivo: las filas que no cumplen ni siquiera se cargan. Parquet lo habilita con sus estadísticas por bloque.</dd>
+      <dt>ETL / ELT</dt><dd>Extract-Transform-Load vs Extract-Load-Transform: transformar antes de cargar al destino, o cargar crudo y transformar dentro del destino.</dd>
+    </dl>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">3.1</span>El mapa de Glue: seis piezas</h3>
+    <p>AWS Glue es un servicio serverless de integración de datos. Sus componentes, cada uno con su función:</p>
+    <ul>
+      <li><strong>Glue Jobs</strong> — el cómputo: scripts Spark o Python que transforman datos. Se paga por DPU-hora.</li>
+      <li><strong>Data Catalog</strong> — el metastore (compatible con Hive): qué tablas existen, su esquema, particiones y ubicación en S3. Lo consumen Athena, Redshift Spectrum, EMR y Lake Formation (módulo 7).</li>
+      <li><strong>Crawlers</strong> — escanean datos, infieren esquema y registran tablas/particiones en el Catalog.</li>
+      <li><strong>Triggers / Workflows</strong> — orquestación básica entre jobs y crawlers.</li>
+      <li><strong>Glue Studio</strong> — editor visual de jobs.</li>
+      <li><strong>Glue Data Quality</strong> — reglas de calidad DQDL sobre tablas del Catalog (módulo 6).</li>
+    </ul>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">3.2</span>Decisiones dentro de Glue: tipo de job, DynamicFrame, bookmarks, crawlers</h3>
+    <h4>¿Qué tipo de job?</h4>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Tipo</th><th>Para qué</th><th>Criterio</th></tr>
+      <tr><td>Spark (Glue ETL)</td><td>Transformaciones distribuidas de volumen grande</td><td>El dato no cabe/no conviene en una máquina; workers G.1X, G.2X…</td></tr>
+      <tr><td>Python Shell</td><td>Tareas ligeras: llamar una API, mover archivos, lanzar SQL en Redshift</td><td>Cabe en una máquina → más simple y mucho más barato que levantar Spark</td></tr>
+      <tr><td>Streaming</td><td>Consumir Kinesis/Kafka en micro-batches</td><td>Necesidad real de latencia baja continua</td></tr>
+    </table></div>
+    <h4>DynamicFrame vs DataFrame</h4>
+    <p>El <strong>DynamicFrame</strong> es la abstracción propia de Glue: tolera esquemas inconsistentes (una columna que a veces es int y a veces string se representa como <em>choice type</em> en vez de fallar), y se integra con el Catalog y los bookmarks. El <strong>DataFrame</strong> de Spark es más rápido y tiene la API completa. Patrón de trabajo habitual: leer como DynamicFrame (para aprovechar Catalog/bookmarks) → <code>toDF()</code> → transformar con Spark puro → volver a DynamicFrame solo si el sink lo requiere.</p>
+    <h4>Job Bookmarks: incrementales sin lógica manual</h4>
+    <p>Glue guarda estado entre ejecuciones para procesar <strong>solo lo nuevo</strong> (por rutas de S3 ya vistas, o columnas de bookmark en fuentes JDBC). Dos advertencias de operación: hay que saber <strong>resetearlos</strong> cuando reprocesas, y no son garantía absoluta de no-duplicados — la idempotencia real se diseña en la escritura (módulo 6), con los bookmarks como optimización.</p>
+    <h4>Crawlers: cuándo NO usarlos</h4>
+    <p>Un crawler infiere esquemas — útil cuando no controlas la fuente. Pero si el esquema es <strong>estable y tuyo</strong>, es mejor definir la tabla por IaC/DDL versionado: determinista, auditable y sin costo de crawler. Y para particiones por fecha, <strong>partition projection</strong> (lección 1.7) las elimina como problema. Respuesta madura: "crawler para descubrir, DDL para operar".</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">3.3</span>Las capas del lake: raw, cleansed, curated</h3>
+    <p>Todo pipeline moderno organiza el lake en capas (arquitectura "medallion"). Cada capa tiene un contrato distinto:</p>
+    <figure class="diag">
+      <svg viewBox="0 0 680 150" role="img" aria-label="Diagrama de capas del data lake: raw a cleansed a curated y consumo">
+        <rect x="10" y="35" width="150" height="80" rx="10" class="dg-box"/>
+        <text x="85" y="63" text-anchor="middle" class="dg-tb">RAW / BRONZE</text>
+        <text x="85" y="82" text-anchor="middle" class="dg-tm">tal cual llega</text>
+        <text x="85" y="97" text-anchor="middle" class="dg-tm">inmutable</text>
+        <line x1="160" y1="75" x2="185" y2="75" class="dg-lna"/><polygon points="190,75 181,70 181,80" class="dg-arra"/>
+        <rect x="192" y="35" width="160" height="80" rx="10" class="dg-boxa"/>
+        <text x="272" y="63" text-anchor="middle" class="dg-tb">CLEANSED / SILVER</text>
+        <text x="272" y="82" text-anchor="middle" class="dg-tm">tipado · dedup</text>
+        <text x="272" y="97" text-anchor="middle" class="dg-tm">validado</text>
+        <line x1="352" y1="75" x2="377" y2="75" class="dg-lna"/><polygon points="382,75 373,70 373,80" class="dg-arra"/>
+        <rect x="384" y="35" width="150" height="80" rx="10" class="dg-boxg"/>
+        <text x="459" y="63" text-anchor="middle" class="dg-tb">CURATED / GOLD</text>
+        <text x="459" y="82" text-anchor="middle" class="dg-tm">modelo de negocio</text>
+        <text x="459" y="97" text-anchor="middle" class="dg-tm">agregados</text>
+        <line x1="534" y1="75" x2="559" y2="75" class="dg-ln"/><polygon points="564,75 555,70 555,80" class="dg-arr"/>
+        <rect x="566" y="20" width="104" height="34" rx="8" class="dg-boxi"/>
+        <text x="618" y="42" text-anchor="middle" class="dg-t">Redshift / BI</text>
+        <rect x="566" y="62" width="104" height="34" rx="8" class="dg-boxi"/>
+        <text x="618" y="84" text-anchor="middle" class="dg-t">Athena</text>
+        <rect x="566" y="104" width="104" height="34" rx="8" class="dg-boxi"/>
+        <text x="618" y="126" text-anchor="middle" class="dg-t">ML</text>
+      </svg>
+      <figcaption>Cada capa endurece el contrato: raw preserva, silver limpia, gold modela para el negocio.</figcaption>
+    </figure>
+    <ul>
+      <li><strong>Raw</strong>: el dato exactamente como llegó, inmutable. Es tu seguro: si un bug corrompe capas superiores, siempre puedes reconstruir desde raw.</li>
+      <li><strong>Cleansed/Silver</strong>: tipos correctos, deduplicado, validaciones de calidad aplicadas, en Parquet particionado.</li>
+      <li><strong>Curated/Gold</strong>: modelado para el negocio (dimensional, agregados), listo para BI/reportes.</li>
+    </ul>
+    <div class="co talk"><span class="ico">🎯</span><div><b class="t">En la entrevista</b>"Describe un pipeline que hayas construido" se responde con esta plantilla: fuente → ingesta (frecuencia, ¿incremental o full?) → capas raw/silver/gold → consumo (Redshift/Athena/BI). Y aterriza con números: formato, particionamiento, orquestación, validaciones, volúmenes (GB/día, filas). Prepara la tuya ANTES de la entrevista.</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">3.4</span>Decisiones de diseño: ETL vs ELT, full vs incremental, schema evolution</h3>
+    <h4>ETL vs ELT</h4>
+    <p><strong>ETL</strong>: transformas antes de cargar (Glue/Spark hace el trabajo). <strong>ELT</strong>: cargas el dato crudo al destino y transformas ahí (SQL en Redshift, dbt). En un lakehouse conviven: la ingesta a raw es "EL", y la transformación entre capas es la "T" — hecha con Spark o SQL según el caso. El criterio: capacidad del motor de destino, gobernanza y costo.</p>
+    <h4>Full load vs incremental</h4>
+    <p>Full load (recargar todo) solo para tablas chicas o reprocesos. Para lo demás, incremental por alguno de estos mecanismos:</p>
+    <ul>
+      <li><strong>Watermark</strong>: "dame todo con <code>fecha_actualizacion &gt;</code> el último valor procesado"; el watermark se guarda en DynamoDB o un parámetro (módulo 7, lección 7.5).</li>
+      <li><strong>CDC</strong> (Change Data Capture): DMS o Debezium capturan los cambios del log de la base fuente.</li>
+      <li><strong>Glue bookmarks</strong> (lección 3.2).</li>
+    </ul>
+    <p>Punto senior: <strong>late-arriving data</strong>. Datos de ayer pueden llegar hoy; por eso muchas cargas releen una ventana (ej. los últimos 3 días) en cada corrida — combinado con escritura idempotente, no duplica nada.</p>
+    <h4>Schema evolution: cuando la fuente cambia</h4>
+    <p>Política explícita, nunca silencio: columnas <strong>nuevas</strong> se agregan (Parquet/Iceberg lo soportan), cambios de <strong>tipo</strong> se validan y castean, columnas <strong>eliminadas</strong> se mantienen como NULL. Y siempre se <strong>alerta</strong>: un cambio de esquema no anunciado suele ser el primer síntoma de un cambio en el sistema fuente que nadie comunicó. Iceberg/Delta manejan la evolución nativamente (módulo 5).</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">3.5</span>Parquet y el problema de los archivos pequeños</h3>
+    <p>¿Por qué Parquet es el formato por defecto del lake?</p>
+    <ul>
+      <li><strong>Columnar</strong>: lee solo las columnas que pides.</li>
+      <li><strong>Comprimido</strong>: ~10x menos que CSV; Snappy es el default equilibrado, ZSTD comprime más a cambio de CPU.</li>
+      <li><strong>Con estadísticas</strong>: cada bloque guarda min/max por columna → el motor salta bloques enteros (predicate pushdown).</li>
+      <li><strong>Tipado</strong>: el esquema viaja con el archivo; no más "todo es string" como en CSV.</li>
+    </ul>
+    <p>CSV/JSON solo se aceptan en raw, si la fuente los entrega así.</p>
+    <h4>Small files problem</h4>
+    <p>Miles de archivos chicos en S3 degradan todo: cada archivo implica una operación de listado/apertura, y los motores (Athena, Spark) pierden más tiempo en overhead que leyendo datos. Causas típicas: escribir con demasiadas particiones de Spark, micro-batches frecuentes. Remedios: <code>coalesce/repartition</code> antes de escribir apuntando a archivos de <strong>128MB–1GB</strong>, y <strong>compactación periódica</strong> en table formats (<code>rewrite_data_files</code> en Iceberg, <code>OPTIMIZE</code> en Delta).</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">3.6</span>Glue vs EMR vs Lambda: elegir el cómputo</h3>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Servicio</th><th>Fortaleza</th><th>Cuándo elegirlo</th></tr>
+      <tr><td>Glue</td><td>Serverless, integrado al Catalog, cero infra</td><td>ETL batch estándar — el default de este proyecto</td></tr>
+      <tr><td>EMR</td><td>Control fino del cluster, librerías especiales</td><td>Jobs muy grandes o largos; a gran escala sale más barato que Glue</td></tr>
+      <tr><td>Lambda</td><td>Arranque instantáneo, por evento</td><td>Tareas &lt;15 min y &lt;10GB RAM: triggers, validaciones, glue code</td></tr>
+    </table></div>
+    <p>Sobre costos de Glue: elegir tipo y número de workers según el volumen real, auto-scaling (Glue 3+), <strong>Flex</strong> para jobs no urgentes (más barato), bookmarks para no reprocesar, y monitorear DPU-hours en CloudWatch. Glue cobra por DPU-hora con mínimo de 1 minuto.</p>
+    <p>Conexión a fuentes: <strong>Glue Connections</strong> (JDBC) dentro de la VPC correcta, con credenciales SIEMPRE en Secrets Manager (módulo 7). Para legacy tipo Teradata: connector JDBC custom o extracción a S3 vía DMS.</p>
+  </article>
+
+  <div class="takeaways">
+    <h4>Lo esencial del módulo</h4>
+    <ul>
+      <li>Glue = jobs (cómputo) + Catalog (metastore) + crawlers (descubrimiento) + DQ; Python Shell para lo liviano.</li>
+      <li>DynamicFrame tolera esquemas sucios; el patrón es DynamicFrame → <code>toDF()</code> → Spark.</li>
+      <li>Capas raw → silver → gold: raw es tu seguro de reconstrucción.</li>
+      <li>Incremental por watermark/CDC/bookmarks + ventana de relectura para late data.</li>
+      <li>Parquet ~128MB–1GB por archivo; compactar es tarea de mantenimiento, no opcional.</li>
+      <li>Schema evolution con política explícita y alertas — nunca romper en silencio.</li>
+    </ul>
+  </div>
+  <div class="mfoot"><button class="donebtn" data-m="m3">✓ Marcar módulo completado</button></div>
+</section>
+<!-- ==================== MÓDULO 4 ==================== -->
+<section class="module" id="m4">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Módulo 04</span><span class="pill media">Prioridad media-alta</span></div>
+    <h2>Orquestación: Step Functions, Lambda y EventBridge</h2>
+    <p class="mlead">Los jobs no viven solos: algo tiene que decidir el orden, reintentar lo que falla, correr en paralelo lo independiente y avisar cuando algo se rompe. Esa es la orquestación, y en un stack 100% AWS la herramienta es Step Functions.</p>
+  </div>
+
+  <div class="defs">
+    <h4>📖 Definiciones clave del módulo</h4>
+    <dl>
+      <dt>Orquestación</dt><dd>Coordinar el conjunto: en qué orden corren los jobs, qué corre en paralelo, qué se reintenta, a quién se avisa cuando falla.</dd>
+      <dt>Máquina de estados</dt><dd>Modelo donde el workflow es un conjunto de estados (pasos) y transiciones entre ellos. Cada ejecución recorre el grafo de un estado a otro.</dd>
+      <dt>ASL</dt><dd>Amazon States Language: el JSON declarativo con el que se define una Step Function.</dd>
+      <dt>Backoff exponencial</dt><dd>Esperar cada vez más entre reintentos (1s, 2s, 4s, 8s…) para darle aire al sistema que está fallando en vez de martillarlo.</dd>
+      <dt>Jitter</dt><dd>Aleatoriedad agregada al backoff para que mil clientes que fallaron juntos no reintenten todos en el mismo instante.</dd>
+      <dt>DLQ</dt><dd>Dead-letter queue: cola donde caen los mensajes/eventos que agotaron sus reintentos. Evita perderlos y permite reprocesarlos tras arreglar la causa.</dd>
+      <dt>At-least-once</dt><dd>Garantía de entrega "al menos una vez": el evento llega, pero puede llegar <em>duplicado</em> (así son los eventos de S3). Exactly-once: exactamente una vez (Step Functions Standard).</dd>
+      <dt>Cold start</dt><dd>Latencia de crear desde cero el entorno de ejecución de una Lambda. Irrelevante en batch, importante en APIs.</dd>
+      <dt>Task token</dt><dd>Ficha que Step Functions entrega a un sistema externo; la ejecución queda pausada hasta que el sistema la devuelva (aprobaciones, pasos manuales).</dd>
+      <dt>Event-driven</dt><dd>Disparar el pipeline cuando ocurre el evento ("llegó el archivo a S3") en vez de a una hora fija ("2am") — más robusto cuando la fuente se atrasa.</dd>
+    </dl>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">4.1</span>Step Functions: workflows como máquinas de estado</h3>
+    <p>Step Functions define workflows como <strong>máquinas de estado</strong> escritas en ASL (Amazon States Language, un JSON declarativo). ¿Por qué usar un orquestador declarativo para ETL en vez de un script que llama jobs?</p>
+    <ul>
+      <li><strong>Reintentos y manejo de errores declarativos</strong> — sin escribir lógica de retry a mano (lección 4.3).</li>
+      <li><strong>Ejecución visual</strong> — cada corrida se ve como un grafo con estados verdes/rojos: el debugging de las 7am se hace mirando un dibujo.</li>
+      <li><strong>Integración nativa</strong> — llama a Glue, Lambda, ECS, SNS, DynamoDB sin escribir código de integración.</li>
+      <li><strong>Paralelismo</strong> — <code>Map</code> y <code>Parallel</code> integrados.</li>
+      <li><strong>Estado entre pasos</strong> — el output de un paso es el input del siguiente.</li>
+    </ul>
+    <h4>Los tipos de estado</h4>
+    <p><code>Task</code> (ejecuta trabajo: una Lambda, un Glue job), <code>Choice</code> (if/else), <code>Parallel</code> (ramas simultáneas distintas), <code>Map</code> (itera la misma lógica sobre un array — ej. un job por tabla), <code>Wait</code>, <code>Pass</code>, <code>Succeed</code>/<code>Fail</code>.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">4.2</span>Standard vs Express: dos productos en uno</h3>
+    <div class="scroll"><table class="tbl">
+      <tr><th></th><th>Standard</th><th>Express</th></tr>
+      <tr><td>Duración máx.</td><td>1 año</td><td>5 minutos</td></tr>
+      <tr><td>Semántica</td><td>Exactly-once</td><td>At-least-once</td></tr>
+      <tr><td>Cobro</td><td>Por transición de estado</td><td>Por número y duración de ejecuciones</td></tr>
+      <tr><td>Caso de uso</td><td><strong>Orquestación de ETL batch</strong></td><td>Eventos de alto volumen, streaming</td></tr>
+    </table></div>
+    <p>Para pipelines batch la respuesta es Standard: las corridas duran minutos u horas, quieres exactly-once y el historial visual completo.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">4.3</span>Errores, esperas y el patrón .sync</h3>
+    <h4>Retry y Catch declarativos</h4>
+    <p>Cada estado <code>Task</code> puede llevar bloques <code>Retry</code> (con <code>ErrorEquals</code> para elegir qué errores, <code>IntervalSeconds</code>, <code>BackoffRate</code> para backoff exponencial y <code>MaxAttempts</code>) y <code>Catch</code> (a dónde derivar si se agotan los reintentos: notificar por SNS, registrar el fallo en DynamoDB, ejecutar compensación). El patrón típico: reintentar 2–3 veces los errores transitorios → si persiste, Catch → alerta + estado FAILED registrado.</p>
+    <h4>Esperar a que termine un Glue job: .sync</h4>
+    <p>La integración <strong>"Run a Job" (<code>glue:startJobRun.sync</code>)</strong> hace que el estado quede bloqueado hasta que el job termine, propagando éxito o fallo automáticamente. Antes esto requería un loop de polling con Lambda + Wait — si lo mencionas como "el patrón viejo que ya no hace falta", demuestras que conoces la evolución del servicio.</p>
+    <h4>Task tokens: pausar hasta que algo externo responda</h4>
+    <p>El patrón callback (<code>waitForTaskToken</code>) entrega un token al sistema externo y pausa la ejecución hasta que este lo devuelva — útil para aprobaciones manuales o pasos que dependen de terceros.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">4.4</span>Mover datos entre pasos</h3>
+    <p>Cada estado recibe un JSON de entrada y produce uno de salida. Con <code>Parameters</code>, <code>ResultSelector</code>, <code>ResultPath</code> y <code>OutputPath</code> (o las variables/JSONata más recientes) controlas qué fragmento fluye hacia el siguiente paso.</p>
+    <p>El uso típico en ETL: una <strong>Lambda inicial calcula el contexto de la corrida</strong> — fecha de proceso, lista de tablas a cargar leída de DynamoDB, watermarks — y ese JSON alimenta al <code>Map</code>, que le pasa a cada Glue job sus <code>--arguments</code> (fecha, tabla). Así el job es parametrizado y reutilizable: la misma definición carga 30 tablas.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">4.5</span>Lambda: qué es y, sobre todo, qué NO es</h3>
+    <p>Límites que definen su rol: <strong>15 minutos</strong> máximo, <strong>10GB RAM</strong> máximo (la CPU escala con la RAM), 250MB de paquete (10GB con imagen de contenedor), <code>/tmp</code> hasta 10GB, concurrencia limitada por cuenta. Conclusión directa: <strong>Lambda no es para transformaciones pesadas</strong> — eso es Glue. Lambda es el pegamento:</p>
+    <ul>
+      <li>Trigger de S3: llega un archivo → validar nombre/formato → iniciar la Step Function.</li>
+      <li>Calcular parámetros de ejecución (fecha, watermark desde DynamoDB).</li>
+      <li>Post-proceso: lanzar <code>COPY</code> a Redshift vía Data API, refrescar particiones.</li>
+      <li>Notificaciones custom a Slack/Teams desde un Catch.</li>
+    </ul>
+    <h4>Dos conceptos de examen</h4>
+    <p><strong>Cold start</strong>: latencia al crear el entorno de ejecución la primera vez. En batch ETL es irrelevante (segundos frente a minutos de job); importa en APIs de baja latencia. Mitigación: provisioned concurrency, paquetes livianos.</p>
+    <p><strong>Errores en invocación asíncrona</strong>: Lambda reintenta 2 veces automáticamente y luego manda el evento a una <strong>DLQ</strong> (SQS) o a un destination on-failure. Y como los eventos de S3 son <em>at-least-once</em> (pueden llegar duplicados), la Lambda debe ser <strong>idempotente</strong> — otro lugar donde reaparece el tema del módulo 6.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">4.6</span>Diseño completo: la carga diaria de 30 tablas</h3>
+    <p>La pregunta de diseño típica: <em>"orquesta la carga diaria de 30 tablas de un core bancario a S3/Redshift"</em>. Respuesta modelo:</p>
+    <figure class="diag">
+      <svg viewBox="0 0 680 300" role="img" aria-label="Diagrama de orquestación: EventBridge inicia Step Function con Lambda, Map de Glue jobs, validación y notificación">
+        <rect x="10" y="18" width="140" height="52" rx="10" class="dg-box"/>
+        <text x="80" y="40" text-anchor="middle" class="dg-tb">EventBridge</text>
+        <text x="80" y="57" text-anchor="middle" class="dg-tm">cron 2:00 am</text>
+        <line x1="150" y1="44" x2="178" y2="44" class="dg-lna"/><polygon points="183,44 174,39 174,49" class="dg-arra"/>
+        <rect x="185" y="18" width="180" height="52" rx="10" class="dg-box"/>
+        <text x="275" y="40" text-anchor="middle" class="dg-tb">Lambda: contexto</text>
+        <text x="275" y="57" text-anchor="middle" class="dg-tm">fecha · tablas (DynamoDB)</text>
+        <line x1="365" y1="44" x2="393" y2="44" class="dg-lna"/><polygon points="398,44 389,39 389,49" class="dg-arra"/>
+        <rect x="400" y="10" width="270" height="130" rx="10" class="dg-boxa"/>
+        <text x="535" y="34" text-anchor="middle" class="dg-tb">Map · concurrencia 5–10</text>
+        <rect x="415" y="46" width="240" height="26" rx="7" class="dg-box"/>
+        <text x="535" y="63" text-anchor="middle" class="dg-t">Glue job tabla 1 (.sync) → DQ</text>
+        <rect x="415" y="78" width="240" height="26" rx="7" class="dg-box"/>
+        <text x="535" y="95" text-anchor="middle" class="dg-t">Glue job tabla 2 (.sync) → DQ</text>
+        <rect x="415" y="110" width="240" height="22" rx="7" class="dg-box"/>
+        <text x="535" y="125" text-anchor="middle" class="dg-tm">… tabla 30</text>
+        <line x1="535" y1="140" x2="535" y2="168" class="dg-lna"/><polygon points="535,173 530,164 540,164" class="dg-arra"/>
+        <rect x="400" y="175" width="270" height="46" rx="10" class="dg-box"/>
+        <text x="535" y="195" text-anchor="middle" class="dg-tb">Carga a Redshift</text>
+        <text x="535" y="212" text-anchor="middle" class="dg-tm">COPY desde S3 · staging + MERGE</text>
+        <line x1="535" y1="221" x2="535" y2="245" class="dg-lna"/><polygon points="535,250 530,241 540,241" class="dg-arra"/>
+        <rect x="400" y="252" width="270" height="40" rx="10" class="dg-boxg"/>
+        <text x="535" y="277" text-anchor="middle" class="dg-t">Parallel: refresh vistas · SNS éxito</text>
+        <rect x="10" y="200" width="300" height="64" rx="10" class="dg-boxi"/>
+        <text x="160" y="224" text-anchor="middle" class="dg-tb">Catch global</text>
+        <text x="160" y="243" text-anchor="middle" class="dg-tm">SNS alerta + registro del fallo</text>
+        <line x1="400" y1="130" x2="313" y2="210" class="dg-ln"/><polygon points="310,213 319,211 313,203" class="dg-arr"/>
+      </svg>
+      <figcaption>EventBridge dispara; una Lambda arma el contexto; el Map paraleliza los 30 jobs; todo fallo cae al Catch global.</figcaption>
+    </figure>
+    <ol>
+      <li><strong>EventBridge Scheduler</strong> (cron 2am, ojo con el timezone) inicia la Step Function. Mencionar: evitar solapamiento (verificar que la corrida anterior terminó) y que un diseño <em>event-driven</em> (S3 event cuando llega el archivo fuente) es más robusto si la fuente se atrasa.</li>
+      <li><strong>Lambda inicial</strong>: calcula fecha de proceso y lee de DynamoDB la configuración (qué tablas, watermarks).</li>
+      <li><strong><code>Map</code> con concurrencia 5–10</strong> sobre las 30 tablas: por cada una, Glue job extract+transform con <code>.sync</code>, luego validación de calidad.</li>
+      <li><strong>Carga a Redshift</strong> (staging + MERGE) y al final un <code>Parallel</code>: refrescar vistas + notificar éxito por SNS.</li>
+      <li><strong>Catch global</strong>: alerta SNS + registro del fallo. Y todo <strong>idempotente por fecha</strong>, para poder relanzar sin miedo.</li>
+    </ol>
+    <h4>¿Y por qué no Airflow?</h4>
+    <p>Comparación honesta: <strong>Step Functions</strong> es serverless puro, sin infraestructura, barato e integrado nativamente a AWS — ideal si todo vive en AWS. <strong>Airflow/MWAA</strong> da DAGs en Python y un ecosistema enorme de operators — mejor para lógica muy compleja o multi-cloud, a cambio de mantener (y pagar) un entorno siempre encendido. <strong>Glue Workflows</strong> es el hermano básico: solo encadena jobs y crawlers de Glue. Este proyecto pide Step Functions: justifica que lo prefieres para stacks 100% AWS.</p>
+  </article>
+
+  <div class="takeaways">
+    <h4>Lo esencial del módulo</h4>
+    <ul>
+      <li>Step Functions = máquina de estados declarativa: Retry/Catch, Map/Parallel, historial visual.</li>
+      <li>Standard para batch (1 año, exactly-once); Express para eventos de alto volumen.</li>
+      <li><code>glue:startJobRun.sync</code> espera al job sin polling; task tokens para pasos externos.</li>
+      <li>Lambda = pegamento (&lt;15 min, &lt;10GB); las transformaciones pesadas van en Glue.</li>
+      <li>Eventos S3 son at-least-once → Lambdas idempotentes + DLQ.</li>
+      <li>Ten listo el diseño de las 30 tablas: es LA pregunta de diseño de orquestación.</li>
+    </ul>
+  </div>
+  <div class="mfoot"><button class="donebtn" data-m="m4">✓ Marcar módulo completado</button></div>
+</section>
+
+<!-- ==================== MÓDULO 5 ==================== -->
+<section class="module" id="m5">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Módulo 05</span><span class="pill alta">Prioridad alta · corazón del proyecto</span></div>
+    <h2>Lakehouse (S3 + Iceberg) y migración desde Teradata</h2>
+    <p class="mlead">El proyecto gira alrededor de esto: mover un warehouse legacy (Teradata, y algo de Azure) a un lakehouse en AWS. Aunque no hayas hecho una migración así, dominar el <strong>enfoque</strong> te permite conversar al nivel que esperan.</p>
+  </div>
+
+  <div class="defs">
+    <h4>📖 Definiciones clave del módulo</h4>
+    <dl>
+      <dt>Data lake</dt><dd>Repositorio de archivos barato y escalable (S3) en formatos abiertos. Acepta todo, pero por sí solo no garantiza nada: ni transacciones, ni esquemas, ni consistencia.</dd>
+      <dt>Data warehouse</dt><dd>Motor analítico con ACID, esquemas fuertes y alto rendimiento (Teradata, Redshift). Potente pero más caro y cerrado.</dd>
+      <dt>Lakehouse</dt><dd>Lake + capa de metadata (table format) que aporta las garantías del warehouse directamente sobre S3. Un solo repositorio para BI y ML.</dd>
+      <dt>Table format</dt><dd>Especificación (Iceberg, Delta) que convierte un conjunto de archivos Parquet en una <em>tabla</em> de verdad: con transacciones, versiones y esquema gestionado.</dd>
+      <dt>ACID</dt><dd>Atomicidad (todo o nada), Consistencia, aislamiento (Isolation: los lectores no ven estados a medias) y Durabilidad.</dd>
+      <dt>Snapshot</dt><dd>Versión inmutable de la tabla creada en cada escritura. La lista de snapshots es el historial completo.</dd>
+      <dt>Time travel</dt><dd>Consultar la tabla como estaba en un snapshot pasado: "muéstrame los saldos como se veían el 15 de marzo".</dd>
+      <dt>Upsert / MERGE</dt><dd>Actualizar la fila si la clave existe, insertarla si no — la operación que un lake "pelado" no puede hacer y un lakehouse sí.</dd>
+      <dt>CoW / MoR</dt><dd>Copy-on-write: cada cambio reescribe los archivos afectados (lecturas rápidas). Merge-on-read: los cambios se escriben como deltas que se aplican al leer (escrituras rápidas).</dd>
+      <dt>BTEQ</dt><dd>El lenguaje de scripting batch de Teradata; sus scripts se rediseñan como jobs Glue + Step Functions al migrar.</dd>
+      <dt>Parallel run</dt><dd>Período en que el sistema viejo y el nuevo corren a la vez y se comparan resultados, antes de confiar en el nuevo.</dd>
+      <dt>Cutover</dt><dd>El momento planificado en que los consumidores se redirigen al sistema nuevo y el viejo se congela.</dd>
+    </dl>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">5.1</span>Qué es un lakehouse y qué problema resuelve</h3>
+    <p>Históricamente había dos mundos: el <strong>data lake</strong> (S3: barato, escalable, formatos abiertos, pero sin transacciones ni garantías) y el <strong>data warehouse</strong> (Teradata/Redshift: ACID, esquemas, rendimiento, pero caro y cerrado). El <strong>lakehouse</strong> junta ambos: datos en S3 en formatos abiertos, con una capa de metadata (<strong>Apache Iceberg</strong> o <strong>Delta Lake</strong> sobre Parquet) que aporta las capacidades de warehouse: transacciones ACID, updates/deletes, time travel, evolución de esquema.</p>
+    <p>El resultado: <strong>un solo repositorio</strong> para BI y ML, sin duplicar datos entre lake y warehouse, y consultable por múltiples motores (Spark, Athena/Trino, Redshift Spectrum, Flink).</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">5.2</span>Qué agregan Iceberg/Delta que Parquet "pelado" no tiene</h3>
+    <p>Parquet es solo un <strong>formato de archivo</strong>. Una "tabla" hecha de archivos Parquet en un directorio tiene problemas estructurales: sin transacciones (un lector puede ver un overwrite a medias), sin updates a nivel de fila, y el motor descubre los archivos <em>listando directorios de S3</em> (lento y frágil). Un <strong>table format</strong> agrega una capa de metadata (manifiestos + snapshots) que resuelve todo eso:</p>
+    <ul>
+      <li><strong>ACID</strong> — cada escritura crea un snapshot atómico: los lectores ven la versión anterior o la nueva, nunca un estado intermedio.</li>
+      <li><strong>MERGE / UPDATE / DELETE por fila</strong> — upserts reales, y borrado selectivo (GDPR / derecho al olvido).</li>
+      <li><strong>Time travel</strong> — consultar la tabla como estaba en cualquier snapshot anterior. En banca esto es oro: auditoría de "qué decía el dato ese día".</li>
+      <li><strong>Schema evolution segura</strong> — agregar/renombrar columnas sin reescribir datos; Iceberg suma <em>hidden partitioning</em> (particiones que el usuario no necesita conocer para que el filtro funcione).</li>
+      <li><strong>Planning rápido</strong> — el motor lee manifiestos, no listados de S3.</li>
+    </ul>
+    <h4>MERGE en Iceberg con Spark</h4>
+    <pre class="code"><code>MERGE INTO curated.clientes t
+USING staging.clientes_delta s
+  ON t.cliente_id = s.cliente_id
+WHEN MATCHED THEN UPDATE SET *
+WHEN NOT MATCHED THEN INSERT *</code></pre>
+    <p>Dos estrategias internas: <strong>copy-on-write</strong> (reescribe los archivos afectados; lecturas rápidas, escrituras más caras) vs <strong>merge-on-read</strong> (escribe archivos delta y los aplica al leer; escrituras rápidas, requiere compactar). Batch nocturno → generalmente copy-on-write.</p>
+    <h4>Mantenimiento de una tabla Iceberg</h4>
+    <p>Un lakehouse en producción se opera: <strong>compactar</strong> archivos chicos (<code>rewrite_data_files</code>), <strong>expirar snapshots</strong> viejos (<code>expire_snapshots</code> — controla el costo de S3 y cumple la política de retención), y limpiar archivos huérfanos.</p>
+    <div class="co talk"><span class="ico">🎯</span><div><b class="t">En la entrevista</b>Mencionar el mantenimiento (compactación, expiración de snapshots) te hace ver senior: quien no ha operado un lakehouse nunca lo menciona, porque los tutoriales terminan en el MERGE.</div></div>
+    <h4>¿Iceberg o Delta?</h4>
+    <p>Resuelven lo mismo. <strong>Iceberg</strong> tiene la integración AWS más profunda (Athena lee y <em>escribe</em> Iceberg; Glue, Redshift Spectrum y S3 Tables lo soportan) y es el estándar abierto multi-engine. <strong>Delta</strong> domina en el ecosistema Databricks. Respuesta madura: "depende del ecosistema; en un stack AWS nativo como este, Iceberg".</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">5.3</span>Organizar el lake en S3</h3>
+    <p>Buckets o prefijos por <strong>capa y dominio</strong>, siguiendo las capas del módulo 3: <code>raw</code> (inmutable, tal cual llega), <code>cleansed/silver</code> (tipado, deduplicado, validado), <code>curated/gold</code> (modelado de negocio). Particionado por fecha de proceso o de negocio según cómo se consulta.</p>
+    <p>Y la parte no funcional que en banca es obligatoria: cifrado <strong>SSE-KMS</strong>, <strong>versionado</strong> en raw (protege de sobrescrituras accidentales), y <strong>lifecycle policies</strong> (histórico frío a Glacier). Más detalle de seguridad en el módulo 7.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">5.4</span>Migración Teradata → AWS: el guion de seis fases</h3>
+    <p>Cuando pregunten "¿cómo enfocarías la migración?", la respuesta es un proceso, no una herramienta:</p>
+    <ol>
+      <li><strong>Assessment</strong> — inventario completo: tablas, vistas, stored procedures, scripts BTEQ, jobs y consumidores. Priorizar por <strong>uso real</strong> (query logs — siempre hay tablas que nadie consulta hace años) y mapear dependencias.</li>
+      <li><strong>Estrategia por olas</strong> — migrar por dominios de negocio, nunca big bang. Definir qué va a <strong>Redshift</strong> (BI de alta concurrencia) y qué a <strong>S3 + Iceberg + Athena</strong> (histórico, exploración, ML).</li>
+      <li><strong>Migración de datos</strong> — histórico full con AWS SCT data extraction agents o export a S3; los incrementos con CDC (DMS) o cargas delta hasta el cutover.</li>
+      <li><strong>Conversión de código</strong> — AWS SCT convierte DDL/SQL de Teradata a Redshift; BTEQ se rediseña como jobs Glue + Step Functions; stored procedures → SQL de Redshift o PySpark. Siempre queda un % manual — decirlo da credibilidad.</li>
+      <li><strong>Parallel run</strong> — correr ambos sistemas un período y <strong>conciliar</strong>: conteos, sumas de negocio, checksums por tabla/partición. Los reportes críticos deben cuadrar antes de seguir.</li>
+      <li><strong>Cutover y descomisión</strong> — redirigir consumidores, congelar Teradata, monitorear, apagar.</li>
+    </ol>
+    <div class="co bank"><span class="ico">🏦</span><div><b class="t">Contexto banca</b>El parallel run no es opcional en banca: los reportes regulatorios del sistema nuevo deben cuadrar con el viejo, con evidencia guardada. La migración se declara exitosa con datos, no con fe.</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">5.5</span>Los dolores técnicos: Teradata vs Redshift, y el legado Azure</h3>
+    <h4>Diferencias que causan trabajo manual</h4>
+    <ul>
+      <li><strong><code>QUALIFY</code></strong> — el filtro de window functions de Teradata. Bonus: Redshift ya lo soporta, y Athena/Trino también.</li>
+      <li><strong>Tipos propietarios</strong> — <code>PERIOD</code>, <code>BYTEINT</code>, formatos de fecha propios: mapeo manual.</li>
+      <li><strong><code>MULTISET</code> vs <code>SET</code></strong> — las tablas SET de Teradata deduplican implícitamente; Redshift no lo hace: si el pipeline dependía de eso, aparecen duplicados tras migrar. Clásica sorpresa.</li>
+      <li><strong>BTEQ y stored procedures</strong> — se reescriben como jobs.</li>
+      <li><strong>Índices → distribución</strong> — el Primary Index de Teradata ≈ DISTKEY de Redshift: el modelo de distribución se rediseña, no se traduce 1:1.</li>
+      <li><strong>Updates frecuentes</strong> — Teradata los tolera; en Redshift, patrón staging + MERGE (lección 1.6).</li>
+    </ul>
+    <h4>Equivalencias Azure → AWS (el aviso menciona legacy Azure)</h4>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Azure</th><th>AWS</th></tr>
+      <tr><td>Data Factory (ADF)</td><td>Glue + Step Functions</td></tr>
+      <tr><td>ADLS</td><td>S3 (mover con DataSync / azcopy)</td></tr>
+      <tr><td>Synapse</td><td>Redshift</td></tr>
+      <tr><td>Databricks</td><td>Glue / EMR</td></tr>
+    </table></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">5.6</span>Validar la migración: conciliación automatizada</h3>
+    <p>"¿Cómo sabes que los datos migrados están bien?" — con una batería automatizada por tabla, en capas de profundidad creciente:</p>
+    <ol>
+      <li><strong>Row counts</strong> por tabla y partición — lo más barato, detecta faltantes gruesos.</li>
+      <li><strong>Agregados de negocio</strong> — SUM de montos, MIN/MAX de fechas, por dimensiones clave: detecta corrupción de valores.</li>
+      <li><strong>Checksums/hashes por fila</strong> sobre muestras — detecta diferencias finas.</li>
+      <li><strong>Reportes críticos</strong> ejecutados en ambos sistemas y comparados.</li>
+    </ol>
+    <p>Todo guardado como <strong>evidencia</strong> — en banca, la auditoría la va a pedir.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">5.7</span>El destino: cuándo Redshift, cuándo Athena</h3>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Motor</th><th>Elegirlo cuando</th></tr>
+      <tr><td>Redshift</td><td>Dashboards de alta concurrencia, SLAs de latencia, modelado dimensional, cargas frecuentes</td></tr>
+      <tr><td>Athena</td><td>Consultas ad-hoc sobre el lake, exploración, datos que no ameritan cargarse, pago por uso</td></tr>
+    </table></div>
+    <p>No es either/or: con <strong>Spectrum</strong>, Redshift también consulta S3/Iceberg. La arquitectura híbrida típica: <strong>gold en Redshift, todo lo demás en el lake</strong>.</p>
+    <p><strong>Redshift Serverless vs provisioned</strong>: Serverless paga por RPU-segundos de uso real, sin administrar cluster — bueno para cargas variables o para empezar. Provisioned (RA3) tiene nodos fijos — mejor para uso constante y predecible; RA3 ya separa cómputo de storage.</p>
+  </article>
+
+  <div class="takeaways">
+    <h4>Lo esencial del módulo</h4>
+    <ul>
+      <li>Lakehouse = S3 + formato de tabla (Iceberg): ACID, MERGE, time travel y schema evolution sobre el lake.</li>
+      <li>Parquet es un formato de archivo; Iceberg es el formato de TABLA encima. En AWS nativo: Iceberg.</li>
+      <li>Operar Iceberg = compactar + expirar snapshots + limpiar huérfanos.</li>
+      <li>Migración: assessment → olas → datos (full + CDC) → conversión (SCT + % manual) → parallel run → cutover.</li>
+      <li>Trampas Teradata: QUALIFY, tipos propios, SET tables que deduplican, PI ≈ DISTKEY.</li>
+      <li>Validación en 4 capas: counts → agregados de negocio → checksums → reportes, con evidencia.</li>
+    </ul>
+  </div>
+  <div class="mfoot"><button class="donebtn" data-m="m5">✓ Marcar módulo completado</button></div>
+</section>
+<!-- ==================== MÓDULO 6 ==================== -->
+<section class="module" id="m6">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Módulo 06</span><span class="pill alta">Prioridad alta · lo piden textual</span></div>
+    <h2>Calidad de datos, idempotencia, errores y monitoreo</h2>
+    <p class="mlead">El aviso lo pide con esas palabras exactas. Este módulo es el que separa "sé escribir un job" de "sé operar un pipeline en producción": qué pasa cuando algo falla, cómo relanzas sin romper nada, y cómo te enteras antes que el usuario.</p>
+  </div>
+
+  <div class="defs">
+    <h4>📖 Definiciones clave del módulo</h4>
+    <dl>
+      <dt>Idempotencia</dt><dd>Propiedad de una operación de producir el mismo resultado aunque la ejecutes N veces. En pipelines: relanzar no duplica ni acumula.</dd>
+      <dt>Backfill</dt><dd>Reprocesar un rango histórico de fechas (por un bug corregido, una fuente que llegó tarde, o una carga inicial).</dd>
+      <dt>Late-arriving data</dt><dd>Datos de días pasados que llegan después de que su día ya fue procesado. Se absorben releyendo una ventana (ej. últimos 3 días) en cada corrida.</dd>
+      <dt>Cuarentena</dt><dd>Apartar los registros inválidos en una tabla/prefijo <code>rejected</code> junto con el motivo, en vez de perderlos o dejarlos pasar.</dd>
+      <dt>DQDL</dt><dd>Data Quality Definition Language: el lenguaje de reglas de AWS Glue Data Quality.</dd>
+      <dt>SLA</dt><dd>Service Level Agreement: el compromiso medible de servicio. En datos: "el dashboard está actualizado a las 8am". Sin alarma que lo vigile, es solo una promesa.</dd>
+      <dt>Observabilidad</dt><dd>La capacidad de responder "¿qué está pasando dentro del sistema?" desde afuera, con logs, métricas y trazas — sin agregar prints a posteriori.</dd>
+      <dt>Log estructurado</dt><dd>Log emitido como JSON con campos fijos, consultable como datos (CloudWatch Insights) en vez de leerse a ojo.</dd>
+      <dt>Post-mortem</dt><dd>Análisis posterior a un incidente centrado en causas y prevención ("¿qué alarma faltó?"), no en culpables.</dd>
+    </dl>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">6.1</span>Idempotencia: la pregunta estrella</h3>
+    <p>Un pipeline es <strong>idempotente</strong> cuando ejecutarlo N veces con el mismo input produce exactamente el mismo resultado: sin duplicados, sin efectos acumulados. ¿Por qué es LA propiedad de diseño? Porque los pipelines <em>van a fallar</em> — la red, la fuente, un límite de servicio — y la única recuperación sana es <strong>relanzar sin miedo</strong>. Si tu pipeline hace <code>append</code> ciego, cada reintento duplica datos: ese es el anti-patrón a nombrar explícitamente (<em>append + retry = duplicados</em>).</p>
+    <h4>Las cinco técnicas concretas</h4>
+    <ol>
+      <li><strong>Overwrite por partición</strong> — el job del día X sobrescribe SOLO la partición X: <code>partitionOverwriteMode=dynamic</code> en Spark, <code>INSERT OVERWRITE</code> en Iceberg. Relanzas el día X y la partición queda idéntica.</li>
+      <li><strong>MERGE por clave de negocio</strong> — upsert en vez de insert ciego: la segunda corrida actualiza en lugar de duplicar.</li>
+      <li><strong>Delete-insert transaccional</strong> — borrar el rango a cargar y reinsertarlo dentro de una transacción (el patrón de Redshift).</li>
+      <li><strong>Dedup como red de seguridad</strong> — <code>dropDuplicates</code> sobre la clave natural antes de escribir.</li>
+      <li><strong>Tabla de control de ejecuciones</strong> — DynamoDB con estado por (proceso, fecha): si ya está SUCCESS, el pipeline decide saltar o exigir un reproceso explícito. También sirve de lock contra corridas concurrentes.</li>
+    </ol>
+    <div class="co key"><span class="ico">💡</span><div><b class="t">Concepto clave</b>La idempotencia no es una feature que agregas al final: es una decisión de <em>cómo escribes</em>. Todas las técnicas comparten la misma idea — que la escritura sea "reemplazar un conjunto bien definido" en vez de "agregar encima".</div></div>
+    <h4>Backfill: reprocesar histórico sin romper nada</h4>
+    <p>Con escritura idempotente por partición, el backfill es trivial: <strong>parametrizar el job por fecha</strong> (nunca "hoy" hardcodeado dentro de la lógica) e iterar el rango con un Map de Step Functions o un loop controlado. Cuidados: resetear/ignorar los bookmarks de Glue, limitar concurrencia, y estimar el costo antes de lanzar 3 años de historia.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">6.2</span>Calidad de datos: las dimensiones y las herramientas</h3>
+    <p>Las validaciones se organizan por <strong>dimensiones de calidad</strong> — así la respuesta suena estructurada y no una lista al azar:</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Dimensión</th><th>Qué valida</th><th>Ejemplo bancario</th></tr>
+      <tr><td>Completitud</td><td>NULLs en campos obligatorios, conteo vs fuente</td><td><code>cliente_id</code> y <code>monto</code> nunca nulos</td></tr>
+      <tr><td>Unicidad</td><td>Duplicados por clave de negocio</td><td>Una fila por transacción</td></tr>
+      <tr><td>Validez</td><td>Tipos, rangos, catálogos, formatos</td><td><code>monto &gt; 0</code>, moneda ∈ {PEN, USD}, regex de DNI/RUC</td></tr>
+      <tr><td>Consistencia</td><td>Integridad referencial, cuadres entre tablas</td><td>Toda transacción tiene cliente; suma de detalle = cabecera</td></tr>
+      <tr><td>Frescura / volumen</td><td>Llegó el dato esperado y en cantidad esperada</td><td>Hay datos de hoy; volumen dentro de ±X% del histórico</td></tr>
+    </table></div>
+    <p>El chequeo de volumen (±X% vs histórico) es detección de anomalías básica y atrapa problemas que ninguna regla puntual ve: la fuente que mandó la mitad del archivo, el filtro que se rompió.</p>
+    <h4>Herramientas (nombra al menos dos)</h4>
+    <ul>
+      <li><strong>AWS Glue Data Quality</strong> — reglas DQDL sobre tablas del Catalog, integrado a los jobs, publica métricas.</li>
+      <li><strong>Great Expectations / Soda</strong> — suites de expectativas versionadas en código, con reportes.</li>
+      <li><strong>Deequ</strong> — librería de AWS sobre Spark: perfilado + constraints dentro del mismo job PySpark.</li>
+      <li><strong>Casero</strong> — queries de validación post-carga como un paso más de la Step Function. Válido decirlo: muchas veces es lo pragmático.</li>
+    </ul>
+    <h4>¿Dónde van las validaciones?</h4>
+    <p>En los tres momentos, con la filosofía <em>fail fast</em>: al <strong>ingerir</strong> (esquema y formato del archivo), al <strong>transformar</strong> (reglas de negocio dentro del job) y <strong>post-carga</strong> (conciliación fuente vs destino). Detectar temprano = corregir barato.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">6.3</span>Cuando una validación falla: política, no solo detección</h3>
+    <p>Detectar es la mitad; la otra mitad es qué haces. La respuesta profesional clasifica por <strong>severidad</strong>:</p>
+    <ul>
+      <li><strong>Bloqueante</strong> — el cuadre monetario no cierra, faltan datos críticos: <strong>abortar, no publicar, alertar</strong>. Mejor un dashboard vacío que uno mentiroso.</li>
+      <li><strong>Advertencia</strong> — un puñado de registros inválidos: <strong>cuarentena y seguir</strong>.</li>
+    </ul>
+    <p>El patrón de <strong>cuarentena</strong>: los registros malos van a una tabla o prefijo <code>rejected</code> junto con el <em>motivo</em> del rechazo; se reportan, se corrigen en la fuente y se reprocesan. Nada se pierde en silencio.</p>
+    <div class="co bank"><span class="ico">🏦</span><div><b class="t">Contexto banca</b>En banca la regla es absoluta: nunca publicar datos que no cuadran, y trazabilidad completa de todo lo rechazado. Un centavo de diferencia en un reporte regulatorio es un incidente, no un redondeo.</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">6.4</span>Manejo de errores: transitorios vs permanentes</h3>
+    <p>El diseño empieza clasificando los errores, porque el tratamiento es opuesto:</p>
+    <ul>
+      <li><strong>Transitorios</strong> (throttling, timeouts, red) → <strong>retry con backoff exponencial + jitter</strong>. Se resuelven solos si esperas.</li>
+      <li><strong>Permanentes</strong> (dato corrupto, bug, esquema roto) → reintentar es inútil: <strong>no reintentar, alertar</strong>, y derivar a intervención.</li>
+    </ul>
+    <p>Las piezas del sistema completo: reintentos declarativos en Step Functions (módulo 4), <strong>DLQ</strong> para eventos que agotaron reintentos (no se pierde el evento; se reprocesa tras arreglar la causa), task tokens para intervención manual, y errores <em>a nivel de registro</em> que no matan el job — una fila mala va a cuarentena, no tumba la carga de 10 millones.</p>
+    <p>Todo fallo queda <strong>registrado con contexto</strong> (job, fecha, paso, error) en la tabla de control. Y la alerta debe ser <strong>accionable</strong>: "Job X falló en paso Y por Z; relanzar con W" — no "job failed".</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">6.5</span>Monitoreo y observabilidad</h3>
+    <p>El objetivo: enterarte tú antes que el usuario. Las capas:</p>
+    <ul>
+      <li><strong>CloudWatch</strong> — logs estructurados, métricas (duración, DPU, filas procesadas) y alarmas. La alarma subestimada: <strong>alarma por ausencia</strong> — "el job ni siquiera corrió a su hora". Un pipeline que no arrancó no genera errores; solo el silencio lo delata.</li>
+      <li><strong>Step Functions console</strong> — el estado visual de cada corrida.</li>
+      <li><strong>SNS</strong> → correo/Slack/Teams para alertas.</li>
+      <li><strong>Métricas de negocio custom</strong> — filas cargadas, montos totales, % rechazados → CloudWatch custom metrics o tabla de auditoría con dashboard.</li>
+      <li><strong>SLA de datos</strong> — exprésalo así: "gerencia necesita el dato a las 8am → alarma si a las 6am no terminó". Un SLA sin alarma es una promesa sin respaldo.</li>
+    </ul>
+    <h4>Qué loguear en un job ETL</h4>
+    <p>Inicio/fin con timestamps, parámetros de la corrida (fecha, tabla), <strong>conteos por etapa</strong> (leídos → transformados → rechazados → escritos), duración por etapa, y errores con stack trace + el registro ofensor. En formato <strong>JSON estructurado</strong>, para poder consultarlos con CloudWatch Insights ("dame todas las corridas donde rechazados &gt; 0").</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">6.6</span>Simulacro: son las 7am y el dashboard de gerencia está vacío</h3>
+    <p>Pregunta favorita de entrevistadores porque revela cómo piensas bajo presión. El guion:</p>
+    <ol>
+      <li><strong>Ubicar el fallo</strong> — la ejecución de la Step Function de anoche: ¿qué paso está en rojo?</li>
+      <li><strong>Causa raíz</strong> — logs de CloudWatch del paso: ¿la fuente no llegó? ¿error de datos? ¿infraestructura?</li>
+      <li><strong>Comunicar de inmediato</strong> — impacto y ETA a los afectados, ANTES de tener el fix. En banca la comunicación pesa tanto como la solución técnica.</li>
+      <li><strong>Mitigar</strong> — si la fuente llegó tarde: relanzar (gracias a la idempotencia, sin riesgo). Si es un bug: hotfix o rollback.</li>
+      <li><strong>Post-mortem</strong> — la pregunta clave: ¿qué alarma faltó para que lo detectara yo a las 3am y no gerencia a las 7am? Agregarla.</li>
+    </ol>
+    <div class="co talk"><span class="ico">🎯</span><div><b class="t">En la entrevista</b>Nota cómo los pasos 4 y 5 dependen de todo el módulo: puedes relanzar tranquilo PORQUE diseñaste idempotente, y el post-mortem produce una alarma nueva PORQUE monitoreas. Cierra la respuesta conectando esos puntos.</div></div>
+  </article>
+
+  <div class="takeaways">
+    <h4>Lo esencial del módulo</h4>
+    <ul>
+      <li>Idempotencia = misma entrada, mismo resultado, N veces. Anti-patrón: append + retry.</li>
+      <li>Técnicas: overwrite por partición, MERGE, delete-insert, dedup, tabla de control.</li>
+      <li>Calidad por dimensiones: completitud, unicidad, validez, consistencia, frescura/volumen.</li>
+      <li>Política ante fallo: bloqueante aborta, advertencia va a cuarentena con motivo.</li>
+      <li>Transitorio → retry con backoff; permanente → alertar. Alertas accionables.</li>
+      <li>Alarma por ausencia + SLA de datos: el silencio también es un fallo.</li>
+    </ul>
+  </div>
+  <div class="mfoot"><button class="donebtn" data-m="m6">✓ Marcar módulo completado</button></div>
+</section>
+
+<!-- ==================== MÓDULO 7 ==================== -->
+<section class="module" id="m7">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Módulo 07</span><span class="pill media">Prioridad media</span></div>
+    <h2>Gobierno de datos: Lake Formation, Catalog y seguridad</h2>
+    <p class="mlead">En banca, quién puede ver qué dato es tan importante como el dato mismo. Este módulo cubre la capa de gobierno: permisos finos sobre el lake, el catálogo como inventario, y la gestión de secretos.</p>
+  </div>
+
+  <div class="defs">
+    <h4>📖 Definiciones clave del módulo</h4>
+    <dl>
+      <dt>Gobierno de datos</dt><dd>Las reglas y controles sobre quién accede a qué dato, con qué calidad, y con qué trazabilidad. No es burocracia: es lo que hace confiable (y legal) el uso del dato.</dd>
+      <dt>PII</dt><dd>Personally Identifiable Information: datos que identifican a una persona (DNI, nombre, dirección, saldos). Lo más protegido del lake.</dd>
+      <dt>LF-Tag</dt><dd>Etiqueta de Lake Formation (<code>dominio=riesgos</code>, <code>confidencialidad=alta</code>) asignada a bases/tablas/columnas; los permisos se otorgan sobre las etiquetas, no recurso por recurso.</dd>
+      <dt>Row/column-level security</dt><dd>Restringir qué filas o columnas ve cada rol dentro de una misma tabla (cada área solo sus agencias; el DNI solo para ciertos roles).</dd>
+      <dt>Data mesh</dt><dd>Modelo organizativo donde cada dominio de negocio publica y gobierna sus datos como un producto, y el resto los consume self-service.</dd>
+      <dt>Enmascaramiento / tokenización</dt><dd>Reemplazar el dato sensible por una versión oculta (hash, asteriscos) o por un token reversible solo con autorización.</dd>
+      <dt>KMS</dt><dd>Key Management Service: el servicio de claves de cifrado de AWS. SSE-KMS = S3 cifra en reposo con claves de KMS que tú controlas y auditas.</dd>
+      <dt>VPC endpoint</dt><dd>Conexión privada desde tu red a un servicio AWS (S3, DynamoDB) sin que el tráfico salga a internet.</dd>
+      <dt>Least privilege</dt><dd>Dar a cada rol/job exactamente los permisos mínimos que necesita, ni uno más.</dd>
+      <dt>TTL</dt><dd>Time To Live: expiración automática de items en DynamoDB — perfecto para locks que deben liberarse solos.</dd>
+    </dl>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">7.1</span>Lake Formation y el modelo de dos capas</h3>
+    <p>Sin Lake Formation, controlar el acceso al lake significa administrar políticas IAM de buckets a mano: frágil y grueso (acceso a archivos, no a datos). <strong>Lake Formation</strong> pone una capa de gobierno encima: permisos a nivel de <strong>base de datos, tabla, columna, fila y celda</strong> sobre los datos registrados en el Data Catalog, con grants estilo SQL (<code>GRANT SELECT ON TABLE ...</code>).</p>
+    <p>El modelo mental es de <strong>dos capas</strong>:</p>
+    <ul>
+      <li><strong>IAM</strong> responde: ¿puedes usar el <em>servicio</em>? (llamar a Athena, ejecutar Glue)</li>
+      <li><strong>Lake Formation</strong> responde: ¿puedes ver esos <em>datos</em>? (qué tablas, qué columnas)</li>
+    </ul>
+    <p>Quien consulta vía Athena, Redshift Spectrum, Glue o EMR pasa por ambos filtros. LF entrega credenciales temporales por debajo, así el usuario <strong>nunca necesita acceso directo al bucket</strong>.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">7.2</span>LF-Tags y el gobierno por dominios</h3>
+    <p>Dar permisos recurso por recurso no escala: con 500 tablas y 20 roles es una matriz inmanejable. Las <strong>LF-Tags</strong> invierten el modelo: etiquetas como <code>dominio=riesgos</code> o <code>confidencialidad=alta</code> se asignan a bases/tablas/columnas, y los permisos se otorgan <strong>sobre las etiquetas</strong> ("el rol analistas-riesgos puede SELECT donde dominio=riesgos y confidencialidad≤media"). Una tabla nueva hereda los permisos correctos con solo etiquetarse.</p>
+    <h4>Columnas y filas sensibles</h4>
+    <p>Para restringir DNI o saldos a ciertos roles: <strong>column-level security</strong> (grant de SELECT excluyendo columnas) y <strong>data filters</strong> para row/cell-level (cada área ve solo sus agencias). Complementos: enmascaramiento en curated (hash/tokenización del DNI) y detección de PII con Glue o Macie.</p>
+    <h4>Data mesh: gobierno por dominios</h4>
+    <p>El "control de accesos por dominios" del aviso apunta a esto: cada dominio de negocio (riesgos, cobranzas, comercial) es <strong>dueño de sus datos como producto</strong> — los publica catalogados, documentados y con calidad garantizada — y el resto los consume self-service vía LF-Tags. El equipo central provee plataforma y estándares, no es cuello de botella.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">7.3</span>El Data Catalog: sin inventario no hay gobierno</h3>
+    <p>El <strong>Glue Data Catalog</strong> es el metastore central (compatible Hive): bases, tablas, esquemas, particiones y ubicación en S3. Su valor es ser el <strong>punto común</strong>: la tabla se define una vez y la consumen Glue, Athena, Redshift Spectrum, EMR y Lake Formation. Y es prerequisito del gobierno: no puedes controlar acceso a datos que no sabes que existen.</p>
+    <p>Mantenerlo sano: tablas creadas por <strong>IaC/DDL versionado</strong> (preferido sobre crawlers — lección 3.2), comentarios de columnas y clasificación de sensibilidad como metadata, esquemas versionados. Bonus: DataZone/SageMaker Catalog como catálogo de <em>negocio</em> encima del técnico.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">7.4</span>Secretos y seguridad del dato bancario</h3>
+    <h4>Credenciales: Secrets Manager</h4>
+    <p>Regla absoluta: <strong>nunca credenciales en código, repos ni variables de entorno visibles</strong>. Secrets Manager guarda secretos cifrados con KMS, con <strong>rotación automática</strong> (RDS/Redshift) y acceso controlado por IAM; los jobs los leen en runtime (Glue Connections lo integra nativo). Diferencia con Parameter Store: SSM es para <em>configuración</em> (y gratis en standard); Secrets Manager para <em>secretos</em>, con rotación.</p>
+    <h4>Asegurar S3 con datos bancarios</h4>
+    <ul>
+      <li>Cifrado en reposo <strong>SSE-KMS</strong> (claves por dominio) y TLS en tránsito.</li>
+      <li>Block public access + bucket policies restrictivas.</li>
+      <li><strong>VPC endpoints</strong>: el tráfico a S3 no sale a internet.</li>
+      <li>Versionado (+ MFA delete en raw), CloudTrail y access logs para auditoría.</li>
+      <li>Retención según regulación local (SBS en Perú).</li>
+    </ul>
+    <h4>Least privilege en la práctica</h4>
+    <p>Roles IAM <strong>por job/servicio</strong> con lo mínimo (el job de ventas no lee riesgos), sin credenciales de larga duración, permisos de datos vía LF por dominio, y revisiones periódicas de acceso.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">7.5</span>DynamoDB: la libreta de apuntes del pipeline</h3>
+    <p>DynamoDB aparece en el aviso no como fuente de datos, sino como <strong>infraestructura operativa del pipeline</strong>:</p>
+    <ul>
+      <li><strong>Tabla de control de ejecuciones</strong> — estado por (proceso, fecha): la base de la idempotencia del módulo 6.</li>
+      <li><strong>Watermarks</strong> de cargas incrementales.</li>
+      <li><strong>Configuración</strong> — la lista de 30 tablas con sus parámetros que lee la Lambda del módulo 4.</li>
+      <li><strong>Locks</strong> — evitar dos corridas simultáneas del mismo proceso.</li>
+      <li><strong>Auditoría</strong> de rápida consulta.</li>
+    </ul>
+    <h4>Lo básico que hay que poder responder</h4>
+    <p><strong>Partition key</strong> (+ sort key opcional) definen la unicidad y el acceso: consultas eficientes solo por clave (<code>Query</code>); <code>Scan</code> recorre toda la tabla y es caro. Capacidad on-demand vs provisioned. <strong>TTL</strong> para expirar items (perfecto para locks). Y <strong>condition expressions</strong>: <code>attribute_not_exists(pk)</code> al insertar implementa un lock seguro — si dos procesos intentan a la vez, solo uno gana.</p>
+  </article>
+
+  <div class="takeaways">
+    <h4>Lo esencial del módulo</h4>
+    <ul>
+      <li>Dos capas: IAM da acceso a servicios; Lake Formation a los datos (tabla/columna/fila/celda).</li>
+      <li>LF-Tags escalan: permisos sobre etiquetas, no recurso por recurso; base del gobierno por dominios.</li>
+      <li>El Catalog es el inventario común de todos los motores — sin él no hay gobierno.</li>
+      <li>Secrets Manager (rotación, KMS) para credenciales; SSM para configuración.</li>
+      <li>S3 bancario: KMS + VPC endpoints + versionado + CloudTrail + retención regulatoria.</li>
+      <li>DynamoDB en pipelines: control de ejecuciones, watermarks, config, locks (con condition expressions).</li>
+    </ul>
+  </div>
+  <div class="mfoot"><button class="donebtn" data-m="m7">✓ Marcar módulo completado</button></div>
+</section>
+<!-- ==================== MÓDULO 8 ==================== -->
+<section class="module" id="m8">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Módulo 08</span><span class="pill media">Prioridad media</span></div>
+    <h2>Infraestructura como código (CDK) y CI/CD (GitHub Actions)</h2>
+    <p class="mlead">En banca, "lo creé a mano en la consola" no es una opción: todo cambio debe ser versionado, revisado y auditable. IaC y CI/CD son la respuesta técnica a ese requisito.</p>
+  </div>
+
+  <div class="defs">
+    <h4>📖 Definiciones clave del módulo</h4>
+    <dl>
+      <dt>IaC</dt><dd>Infraestructura como Código: definir buckets, jobs y roles en archivos versionables en Git, en vez de clicks en la consola. Reproducible, revisable, auditable.</dd>
+      <dt>Drift</dt><dd>Divergencia entre lo que está desplegado y lo que dice el código, causada por cambios manuales en la consola.</dd>
+      <dt>Construct</dt><dd>El bloque reutilizable de CDK. L1 = mapeo crudo 1:1 a CloudFormation; L2 = con defaults sanos; L3 = patrones completos que tu equipo define y reutiliza.</dd>
+      <dt>Synth</dt><dd>El paso donde CDK "compila" tu código Python/TypeScript al template de CloudFormation que realmente se despliega.</dd>
+      <dt>CI</dt><dd>Integración continua: validar automáticamente cada cambio (lint, tests, synth) en cuanto se propone, no semanas después.</dd>
+      <dt>CD</dt><dd>Despliegue continuo: llevar los cambios validados a los ambientes por un pipeline automatizado, con gates de aprobación donde corresponda.</dd>
+      <dt>OIDC</dt><dd>OpenID Connect: identidad federada. GitHub le presenta a AWS un token firmado y recibe credenciales temporales — cero access keys guardadas.</dd>
+      <dt>Runner</dt><dd>La máquina que ejecuta los steps de un workflow de GitHub Actions.</dd>
+      <dt>Mock</dt><dd>Objeto falso que imita un servicio real para testear sin tocarlo: <code>moto</code> imita S3/DynamoDB en memoria.</dd>
+      <dt>Fixture</dt><dd>Pieza de contexto reutilizable de pytest (la SparkSession local, un DataFrame de prueba) que se inyecta en los tests.</dd>
+      <dt>Feature flag</dt><dd>Interruptor (parámetro, config) para activar o desactivar lógica nueva sin redesplegar código.</dd>
+    </dl>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">8.1</span>CDK: infraestructura escrita en tu lenguaje</h3>
+    <p><strong>AWS CDK</strong> define infraestructura en lenguajes reales (Python, TypeScript) y la <strong>sintetiza a CloudFormation</strong>, que es quien despliega y mantiene el estado. Las comparaciones que van a preguntar:</p>
+    <ul>
+      <li><strong>vs CloudFormation puro</strong> — CDK aporta abstracción, lógica real (loops, condicionales — generar 30 jobs desde una lista) y reutilización mediante constructs.</li>
+      <li><strong>vs Terraform</strong> — Terraform es multi-cloud con HCL declarativo y maneja su propio tfstate; CDK es AWS-only y delega el estado en CloudFormation. En un proyecto AWS puro, CDK encaja natural.</li>
+    </ul>
+    <h4>Los tres conceptos: App, Stack, Construct</h4>
+    <ul>
+      <li><strong>App</strong> — la raíz del proyecto.</li>
+      <li><strong>Stack</strong> — la unidad de despliegue (equivale a un stack de CloudFormation).</li>
+      <li><strong>Construct</strong> — el bloque reutilizable, en tres niveles: <strong>L1</strong> (mapeo 1:1 crudo, prefijo <code>Cfn</code>), <strong>L2</strong> (con defaults sanos — lo que usas a diario), <strong>L3/patterns</strong> (soluciones completas: el construct "pipeline S3→Glue→Redshift" que tu equipo define una vez y reutiliza en cada tabla).</li>
+    </ul>
+    <h4>El flujo de trabajo</h4>
+    <pre class="code"><code>cdk init        <i># crear proyecto</i>
+cdk bootstrap   <i># recursos base por cuenta/región (una vez)</i>
+cdk synth       <i># generar el template CloudFormation</i>
+cdk diff        <i># ver QUÉ va a cambiar — SIEMPRE antes de deploy</i>
+cdk deploy
+cdk destroy</code></pre>
+    <p>En este proyecto definirías con CDK: buckets S3 (cifrado, lifecycle), Glue jobs + Connections + bases del Catalog, Step Functions, Lambdas, roles IAM por job, tablas DynamoDB de control, secretos y alarmas. Todo en Git = todo auditable.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">8.2</span>Ambientes y drift: la disciplina operativa</h3>
+    <h4>dev / qa / prod</h4>
+    <p>El mismo código de stacks, parametrizado por ambiente (context/props): distintos tamaños, nombres y — idealmente — <strong>cuentas AWS separadas</strong>. El principio: <em>si no está en el repo, no existe</em>. Nunca recursos de prod creados a mano.</p>
+    <h4>¿Y si alguien cambia algo en la consola?</h4>
+    <p>Eso es <strong>drift</strong>: la realidad divergió del código. Se detecta con <code>cdk diff</code> o la detección de drift de CloudFormation. La política sana: el pipeline es la <strong>única vía de cambio a prod</strong>; el acceso de consola a prod es de solo lectura. Responder esto muestra madurez operativa — y en banca suele ser requisito de auditoría, no una preferencia.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">8.3</span>GitHub Actions: anatomía y el pipeline de datos</h3>
+    <h4>Vocabulario mínimo</h4>
+    <p>Workflows en YAML dentro de <code>.github/workflows/</code>: <code>on</code> define los triggers (push, pull_request, workflow_dispatch, schedule); <code>jobs</code> contienen <code>steps</code> (<code>uses</code> para actions publicadas, <code>run</code> para comandos); <code>needs</code> encadena jobs; <code>environments</code> con reviewers requeridos implementan el gate de aprobación a prod; secrets por repo/environment.</p>
+    <h4>El pipeline CI/CD para un proyecto de datos</h4>
+    <ol>
+      <li><strong>En cada PR (CI)</strong> — lint (ruff), tests unitarios de transformaciones (pytest), y <code>cdk synth</code> + <code>cdk diff</code> como validación de la infra.</li>
+      <li><strong>En merge a main (CD)</strong> — deploy automático a dev → tests de integración (correr el job con dataset de prueba y validar la salida) → <strong>aprobación manual</strong> (environment protection rule) → deploy a prod. Tag/release para trazabilidad.</li>
+    </ol>
+    <h4>Autenticación contra AWS: OIDC</h4>
+    <p>La respuesta de nota alta: <strong>OIDC en vez de access keys guardadas</strong>. Con <code>aws-actions/configure-aws-credentials</code> y un role-to-assume, GitHub emite un token que AWS confía vía identity provider y entrega <strong>credenciales temporales</strong>. Sin secretos de larga duración que rotar ni que se filtren.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">8.4</span>Testear PySpark en CI (sin tocar AWS)</h3>
+    <p>Aquí conecta todo lo del módulo 2: si las transformaciones son <strong>funciones puras</strong> que reciben y devuelven DataFrames, se testean con una SparkSession local:</p>
+    <pre class="code"><code>import pytest
+from pyspark.sql import SparkSession
+from etl.transformaciones import limpiar_transacciones
+
+@pytest.fixture(scope=<u>"session"</u>)
+def spark():
+    return SparkSession.builder.master(<u>"local[2]"</u>).getOrCreate()
+
+def test_descarta_montos_negativos(spark):
+    entrada = spark.createDataFrame(
+        [(<u>"t1"</u>, 100.0), (<u>"t2"</u>, -50.0)], [<u>"transaccion_id"</u>, <u>"monto"</u>])
+    salida = limpiar_transacciones(entrada)
+    assert salida.count() == 1
+    assert salida.first()[<u>"transaccion_id"</u>] == <u>"t1"</u></code></pre>
+    <p>Datos sintéticos chicos, asserts sobre el resultado (o <code>assertDataFrameEqual</code> de <code>pyspark.testing</code>), y <code>moto</code> para mockear servicios AWS. Los tests corren en el runner de GitHub sin credenciales ni costo.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">8.5</span>Qué versionar y cómo desplegar sin romper la carga de esta noche</h3>
+    <h4>En Git va TODO lo que define el sistema</h4>
+    <p>Código de jobs, infraestructura (CDK), DDLs, reglas de calidad, configuración de pipelines, documentación. Lo que NO va: datos, secretos, notebooks sucios. Branch strategy simple (trunk-based o GitFlow ligero) con <strong>PRs y revisión obligatoria</strong> — en banca, requisito de auditoría.</p>
+    <h4>Desplegar un cambio en un Glue job con carga nocturna</h4>
+    <p>Primero el dato técnico: el deploy actualiza la <em>definición</em> del job — las ejecuciones en curso no se interrumpen. Las mitigaciones de riesgo:</p>
+    <ul>
+      <li>Desplegar <strong>fuera de la ventana de carga</strong>.</li>
+      <li>Tests de integración en dev con data representativa antes del merge.</li>
+      <li>Feature flag / parámetro del job para activar la lógica nueva gradualmente.</li>
+      <li>Rollback = redeploy del commit anterior — trivial porque todo está en Git.</li>
+    </ul>
+  </article>
+
+  <div class="takeaways">
+    <h4>Lo esencial del módulo</h4>
+    <ul>
+      <li>CDK = infraestructura en Python/TS que sintetiza a CloudFormation; App → Stack → Construct (L1/L2/L3).</li>
+      <li><code>cdk diff</code> siempre antes de deploy; drift se combate con "el pipeline es la única vía a prod".</li>
+      <li>CI en PR: lint + pytest + synth/diff. CD: dev → integración → aprobación manual → prod.</li>
+      <li>OIDC para autenticar Actions contra AWS: credenciales temporales, cero access keys.</li>
+      <li>Transformaciones puras + SparkSession local + moto = PySpark testeable en CI.</li>
+      <li>Todo versionado, PRs revisados: en banca es auditoría, no estilo.</li>
+    </ul>
+  </div>
+  <div class="mfoot"><button class="donebtn" data-m="m8">✓ Marcar módulo completado</button></div>
+</section>
+
+<!-- ==================== MÓDULO 9 ==================== -->
+<section class="module" id="m9">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Módulo 09</span><span class="pill alta">Prioridad alta</span></div>
+    <h2>La entrevista: conductuales, contexto banca y tus preguntas</h2>
+    <p class="mlead">La técnica te clasifica; lo conductual decide. En consultoría (EVOL) pesan especialmente la comunicación con cliente, la adaptabilidad y la autonomía. Y el contexto bancario bien manejado te diferencia de candidatos técnicamente equivalentes.</p>
+  </div>
+
+  <div class="defs">
+    <h4>📖 Definiciones clave del módulo</h4>
+    <dl>
+      <dt>STAR</dt><dd>Situación, Tarea, Acción, Resultado: el formato estándar para responder preguntas conductuales con una historia concreta y medible.</dd>
+      <dt>Pitch</dt><dd>Tu presentación preparada de 90 segundos: experiencia → stack → logros con números → por qué este proyecto.</dd>
+      <dt>Secreto bancario</dt><dd>Protección legal de la información financiera del cliente: ni siquiera dentro del banco todos pueden verla.</dd>
+      <dt>SBS</dt><dd>Superintendencia de Banca, Seguros y AFP: el regulador financiero peruano; define requisitos de reportería, retención y seguridad.</dd>
+      <dt>Ley 29733</dt><dd>La ley peruana de protección de datos personales — el "GDPR peruano".</dd>
+      <dt>PCI DSS</dt><dd>Estándar internacional de seguridad para datos de tarjetas de pago.</dd>
+      <dt>Cierre diario</dt><dd>El batch nocturno que consolida la operación del día. Su ventana es sagrada: si no termina antes de que abra la operación, hay impacto de negocio.</dd>
+      <dt>Célula</dt><dd>En consultoría: el equipo (de EVOL, en este caso) que trabaja para el cliente, ya sea embebido en sus equipos o como unidad autónoma.</dd>
+    </dl>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">9.1</span>El método STAR y tus tres historias</h3>
+    <p>Toda respuesta conductual sigue el formato <strong>STAR</strong>: <strong>S</strong>ituación (contexto en 2 frases), <strong>T</strong>area (qué te tocaba a ti), <strong>A</strong>cción (qué hiciste TÚ, no el equipo), <strong>R</strong>esultado (con números). La preparación eficiente no es memorizar 20 respuestas: es preparar <strong>3 historias de proyectos reales</strong> y saber rotarlas — casi todas las preguntas conductuales y varias técnicas se responden anclándolas a una de ellas.</p>
+    <ul>
+      <li><strong>Historia 1: tu pipeline más complejo</strong> — arquitectura, volúmenes, herramientas, y qué problema de negocio resolvía. Sirve para "cuéntame de ti", "describe un pipeline", "tu mayor reto".</li>
+      <li><strong>Historia 2: un error grave en producción</strong> — elige uno real; enfócate en detección, comunicación honesta, fix, y la salvaguarda que agregaste. Nunca digas "no me he equivocado".</li>
+      <li><strong>Historia 3: trabajo con cliente/negocio difícil</strong> — expectativas, comunicación de un problema técnico sin jerga, prioridades en conflicto.</li>
+    </ul>
+    <p><strong>Cuantifica todo</strong>: lleva 2–3 métricas de memoria — "procesábamos X GB/día", "bajamos la carga de 4h a 40min", "redujimos el costo de Athena 60% con particiones y Parquet".</p>
+    <p>Y el pitch inicial de 90 segundos: años de experiencia → stack alineado al aviso (Python, SQL, PySpark, AWS) → 1–2 logros con números → por qué este proyecto.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">9.2</span>Las conductuales con trampa</h3>
+    <ul>
+      <li><strong>"El cliente te pide saltarte validaciones para llegar a la fecha"</strong> — exponer riesgos con datos, proponer una alternativa que cumpla el plazo, escalar si es necesario, documentar la decisión. En banca: la integridad de datos regulatorios no se negocia.</li>
+      <li><strong>"Te asignan tecnología que no dominas (ej. Iceberg)"</strong> — plan concreto: docs oficiales → POC pequeño → apoyarte en el equipo → timeboxing. Ideal con ejemplo pasado real.</li>
+      <li><strong>"¿Cómo priorizas múltiples urgencias?"</strong> — impacto en negocio/SLA primero, comunicar trade-offs, no prometer todo.</li>
+      <li><strong>"¿Por qué quieres cambiar de trabajo?"</strong> — siempre en positivo (crecer hacia proyectos de mayor escala en banca y migraciones cloud); jamás hablar mal del empleador actual.</li>
+      <li><strong>"Conflicto con un compañero por una decisión de diseño"</strong> — datos sobre opiniones, buscar el criterio objetivo (costo, rendimiento, mantenibilidad), y aceptar la decisión final del equipo.</li>
+    </ul>
+    <div class="co key"><span class="ico">💡</span><div><b class="t">Si no sabes algo</b>La fórmula que valoran en semisenior: "No lo he usado en producción, pero entiendo el concepto: funciona así… Lo abordaría haciendo X y lo validaría con Y". Honestidad + criterio &gt; inventar. Se nota inmediatamente cuando alguien inventa.</div></div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">9.3</span>Lo que hace distinto trabajar con datos bancarios</h3>
+    <p>Esta pregunta te diferencia. La respuesta organizada:</p>
+    <ul>
+      <li><strong>Sensibilidad</strong> — PII y secreto bancario: enmascaramiento, tokenización, mínimo acceso.</li>
+      <li><strong>Regulación</strong> — en Perú: SBS y la Ley 29733 de protección de datos personales; internacional: Basilea, PCI para tarjetas.</li>
+      <li><strong>Auditoría total</strong> — quién tocó qué dato y cuándo; evidencia de cada proceso.</li>
+      <li><strong>Cuadres exactos</strong> — un centavo de diferencia importa; los totales deben conciliar siempre.</li>
+      <li><strong>Ventanas estrictas</strong> — cierre diario/mensual: el batch nocturno DEBE terminar antes de que abra la operación; por eso los SLAs son críticos y el módulo 6 existe.</li>
+      <li><strong>Ambientes segregados</strong> — nunca copiar prod a dev tal cual: datos enmascarados o sintéticos fuera de producción.</li>
+    </ul>
+    <p>Y la pregunta ética: <strong>"¿detectaste que un reporte regulatorio salió con datos incorrectos?"</strong> → alertar de inmediato aunque sea incómodo, dimensionar el impacto, corregir con evidencia, post-mortem. La transparencia es innegociable.</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">9.4</span>Tus preguntas al entrevistador</h3>
+    <p>No preguntar nada resta. Hacer 2–4 preguntas buenas demuestra seniority. Las de mayor impacto para este proyecto:</p>
+    <ol>
+      <li><strong>"¿En qué fase está la migración de Teradata?"</strong> — ¿assessment, primeras olas, régimen? ¿Qué dominios van primero?</li>
+      <li><strong>"¿Eligieron Iceberg o Delta para el lakehouse? ¿Qué motivó la decisión?"</strong> — demuestra que conoces el trade-off.</li>
+      <li><strong>"¿Cuál es la arquitectura objetivo: Redshift como warehouse principal y Athena para exploración, o el lake al centro?"</strong></li>
+      <li>"¿Qué es lo más difícil que han encontrado en la migración?" (BTEQ, volumen, dependencias de reportes…)</li>
+      <li>"¿Cómo está compuesto el equipo y con quién trabajaría en el día a día?"</li>
+      <li>"¿Cómo se ve el éxito de esta posición en los primeros 3–6 meses?"</li>
+      <li>"¿Cómo es el proceso de despliegue a producción del banco?" (ventanas, comités, aprobaciones)</li>
+    </ol>
+    <p><strong>Evita en la primera entrevista</strong>: salario/beneficios si es técnica (guárdalo para RRHH), vacaciones, "¿puedo trabajar 100% remoto?" (el aviso ya dice híbrido).</p>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">9.5</span>Estrategia final: cómo cierra todo el curso</h3>
+    <ol>
+      <li><strong>El combo más evaluado</strong>: PySpark (M2) + Glue (M3) + calidad e idempotencia (M6). El aviso lo menciona explícitamente.</li>
+      <li><strong>El corazón del proyecto</strong>: la migración Teradata → Lakehouse (M5). Domina el guion de 6 fases aunque no lo hayas vivido.</li>
+      <li><strong>Los diferenciadores</strong>: mantenimiento de Iceberg (5.2), alarma por ausencia (6.5), OIDC (8.3), fan-out (1.2), contexto SBS (9.3) — detalles que casi nadie menciona.</li>
+      <li><strong>Ten listas</strong>: tus 3 historias STAR con números, tu arquitectura de pipeline dibujable en 2 minutos, y el diseño de las 30 tablas (4.6).</li>
+      <li><strong>Logística</strong>: rango salarial investigado (no un número seco, flexible según paquete), disponibilidad, y confirmación del híbrido en La Victoria 2x/semana.</li>
+    </ol>
+  </article>
+
+  <div class="takeaways">
+    <h4>Lo esencial del módulo</h4>
+    <ul>
+      <li>3 historias STAR con números cubren el 90% de las conductuales.</li>
+      <li>Errores pasados: detección + comunicación honesta + salvaguarda. Nunca "no me equivoco".</li>
+      <li>Banca = sensibilidad, regulación (SBS, Ley 29733), auditoría, cuadres exactos, ventanas estrictas.</li>
+      <li>Integridad de datos regulatorios: innegociable, incluso bajo presión del cliente.</li>
+      <li>Lleva tus preguntas: fase de la migración, Iceberg vs Delta, arquitectura objetivo.</li>
+      <li>"No lo sé, pero lo abordaría así" &gt; inventar. Siempre.</li>
+    </ul>
+  </div>
+  <div class="mfoot"><button class="donebtn" data-m="m9">✓ Marcar módulo completado</button></div>
+</section>
+
+<footer style="border-top:1px solid var(--line);padding-top:1.2rem;color:var(--muted);font-size:.82rem">
+  Curso generado a partir del banco de preguntas de <code>preguntas/</code> · Los módulos se complementan con los archivos <code>01</code>–<code>10</code> en formato Markdown y con <code>ruta-data-engineer.html</code> para practicar en modo pregunta-respuesta.
+</footer>
+</main>
+</div>
+<button class="menubtn" id="menubtn" aria-label="Abrir índice">☰</button>
+<script>
+(function(){
+  var KEY='curso-de-progress';
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+  function save(p){try{localStorage.setItem(KEY,JSON.stringify(p))}catch(e){}}
+  var prog=load();
+  var MODS=['m1','m2','m3','m4','m5','m6','m7','m8','m9'];
+  function paint(){
+    var n=0;
+    MODS.forEach(function(m){
+      var on=!!prog[m]; if(on)n++;
+      var link=document.querySelector('#toc a[data-m="'+m+'"]');
+      if(link)link.classList.toggle('done',on);
+      var btn=document.querySelector('.donebtn[data-m="'+m+'"]');
+      if(btn){btn.classList.toggle('on',on);btn.textContent=on?'✓ Módulo completado':'✓ Marcar módulo completado';}
+    });
+    var pb=document.getElementById('pbar'),pt=document.getElementById('ptxt');
+    if(pb)pb.style.width=(n/MODS.length*100)+'%';
+    if(pt)pt.textContent=n+'/'+MODS.length;
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('.donebtn');
+    if(b){var m=b.getAttribute('data-m');prog[m]=!prog[m];save(prog);paint();}
+  });
+  paint();
+  // scrollspy
+  var links={};
+  document.querySelectorAll('#toc a[data-m]').forEach(function(a){links[a.getAttribute('data-m')]=a;});
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        Object.keys(links).forEach(function(k){links[k].classList.remove('active')});
+        var l=links[en.target.id]; if(l)l.classList.add('active');
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px'});
+  document.querySelectorAll('section.module').forEach(function(s){obs.observe(s)});
+  // mobile menu
+  var side=document.getElementById('side'),mb=document.getElementById('menubtn');
+  if(mb)mb.addEventListener('click',function(){side.classList.toggle('open');});
+  document.querySelectorAll('#toc a').forEach(function(a){a.addEventListener('click',function(){side.classList.remove('open')})});
+})();
+</script>
+</body>
+</html>
