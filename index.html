@@ -170,6 +170,32 @@ details.ex .inner{padding:0 16px 14px}
 .donebtn:hover{border-color:var(--good);color:var(--good-ink)}
 .donebtn.on{background:var(--good);border-color:var(--good);color:#fff}
 
+/* ============ laboratorio SQL ============ */
+.lab-grid{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:14px}
+@media (max-width:860px){.lab-grid{grid-template-columns:1fr}}
+textarea.sqled{width:100%;min-height:180px;resize:vertical;background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);font-size:.85rem;line-height:1.55;border:1px solid var(--line2);border-radius:12px;padding:12px 14px;tab-size:2;box-sizing:border-box}
+textarea.sqled:focus{outline:2px solid var(--accent);outline-offset:1px}
+.labbtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+.btn{font-family:var(--mono);font-size:.76rem;padding:8px 14px;border-radius:10px;border:1.5px solid var(--line2);background:var(--surface2);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent-ink)}
+.btn.run{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.run:hover{filter:brightness(1.08);color:#fff}
+.okmsg{color:var(--good-ink);font-family:var(--mono);font-size:.72rem}
+.errbox{background:var(--bad-soft);border:1px solid var(--bad);color:var(--bad-ink);border-radius:10px;padding:10px 12px;font-family:var(--mono);font-size:.78rem;white-space:pre-wrap;margin:.6rem 0}
+.labout{margin-top:.4rem}
+.labout .scroll{max-height:340px;overflow-y:auto}
+.labout table.tbl td:first-child{font-weight:400;white-space:normal}
+.labout table.tbl td.null{color:var(--muted);font-style:italic}
+.labout .rmeta{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin:.4rem 0}
+.labsel{font:inherit;font-size:.82rem;background:var(--surface2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:7px 9px;max-width:100%}
+.schemacard{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.8rem;align-self:start}
+.schemacard>b{font-family:var(--disp);font-size:.9rem}
+.schemacard .hint{font-size:.7rem;color:var(--muted);display:block;margin:2px 0 8px}
+.stbl{margin-bottom:9px;cursor:pointer;border-radius:8px;padding:5px 7px;border:1px solid transparent}
+.stbl:hover{background:var(--surface);border-color:var(--line)}
+.stbl b{font-family:var(--mono);font-size:.76rem;color:var(--accent-ink)}
+.stbl div{font-family:var(--mono);font-size:.68rem;color:var(--muted);line-height:1.5}
+
 /* ============ audiolibro ============ */
 .herolisten{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.8rem;letter-spacing:.04em;padding:11px 20px;border-radius:99px;background:var(--accent);color:#fff;border:none;margin:0 0 1.4rem;box-shadow:var(--shadow)}
 .herolisten:hover{filter:brightness(1.08)}
@@ -227,6 +253,7 @@ body.audio-on .menubtn{bottom:86px}
     <a href="#m7" data-m="m7"><span class="n">07</span>Gobierno de datos<span class="chk">✓</span></a>
     <a href="#m8" data-m="m8"><span class="n">08</span>IaC y CI/CD<span class="chk">✓</span></a>
     <a href="#m9" data-m="m9"><span class="n">09</span>Entrevista y banca<span class="chk">✓</span></a>
+    <a href="#lab" data-m="lab"><span class="n">🧪</span>Laboratorio SQL<span class="chk">✓</span></a>
   </nav>
   <div class="sidefoot">Basado en el banco de preguntas de la carpeta <code>preguntas/</code>. El progreso se guarda en este navegador.</div>
 </aside>
@@ -379,7 +406,7 @@ SELECT a.* FROM a WHERE a.id NOT IN (SELECT id FROM b);</code></pre>
   </article>
 
   <details class="ex">
-    <summary>🏋️ Ejercicios del módulo (practícalos en un editor SQL)</summary>
+    <summary>🏋️ Ejercicios del módulo (practícalos en el <a href="#lab">Laboratorio SQL</a> al final del curso)</summary>
     <div class="inner">
       <ol>
         <li><strong>Segundo salario más alto por departamento</strong> — <code>DENSE_RANK()</code> por departamento ordenado por salario DESC, filtrar <code>rn = 2</code>.</li>
@@ -1446,6 +1473,67 @@ def test_descarta_montos_negativos(spark):
   <div class="mfoot"><button class="donebtn" data-m="m9">✓ Marcar módulo completado</button></div>
 </section>
 
+<!-- ==================== LABORATORIO SQL ==================== -->
+<section class="module" id="lab">
+  <div class="mhead">
+    <div class="mkicker"><span class="mnum">Laboratorio</span><span class="pill bonus">Práctica para la prueba</span></div>
+    <h2>Laboratorio SQL: ejecuta tus soluciones aquí</h2>
+    <p class="mlead">Un motor SQL real (SQLite compilado a WebAssembly) corriendo 100% en tu navegador, con una base de datos estilo fintech de créditos ya cargada: clientes, créditos, cuotas con atrasos e impagos, y transacciones. Elige un ejercicio, escribe tu solución y ejecútala con <strong>Ctrl+Enter</strong>. Los datos se regeneran igual en cada visita.</p>
+  </div>
+
+  <article class="lesson">
+    <h3><span class="ln">SQL</span>Editor y ejercicios</h3>
+    <div class="labbtns">
+      <select class="labsel" id="exsel">
+        <option value="-1">— Elige un ejercicio (o escribe SQL libre) —</option>
+      </select>
+    </div>
+    <div class="co key" id="exenun" hidden><span class="ico">🎯</span><div><b class="t">Ejercicio</b><p id="exenuntxt"></p></div></div>
+    <div class="lab-grid">
+      <div>
+        <textarea id="sqled" class="sqled" spellcheck="false">-- Escribe tu SQL aquí y presiona Ctrl+Enter
+SELECT * FROM creditos LIMIT 10;</textarea>
+        <div class="labbtns">
+          <button class="btn run" id="runbtn">▶ Ejecutar</button>
+          <button class="btn" id="resetbtn" title="Vuelve a crear las tablas con los datos originales">↺ Reiniciar datos</button>
+          <button class="btn" id="clearbtn">Limpiar editor</button>
+          <span class="okmsg" id="labstatus"></span>
+        </div>
+        <details class="ex" id="soldet" hidden>
+          <summary>💡 Ver solución del ejercicio</summary>
+          <div class="inner">
+            <pre class="code"><code id="solcode"></code></pre>
+            <button class="btn" id="solload">Copiar solución al editor</button>
+          </div>
+        </details>
+        <div id="labout" class="labout"></div>
+      </div>
+      <aside class="schemacard">
+        <b>Esquema</b><span class="hint">clic en una tabla = ver 10 filas</span>
+        <div class="stbl" data-t="clientes"><b>clientes</b><div>cliente_id · nombre · distrito · fecha_alta · score · ingreso_mensual</div></div>
+        <div class="stbl" data-t="clientes_staging"><b>clientes_staging</b><div>cliente_id · nombre · email · fecha_actualizacion <em>(con duplicados)</em></div></div>
+        <div class="stbl" data-t="creditos"><b>creditos</b><div>credito_id · cliente_id · producto · monto · tasa · plazo_meses · fecha_desembolso · estado</div></div>
+        <div class="stbl" data-t="pagos"><b>pagos</b><div>pago_id · credito_id · nro_cuota · fecha_vencimiento · fecha_pago <em>(NULL = impaga)</em> · monto_cuota · monto_pagado</div></div>
+        <div class="stbl" data-t="transacciones"><b>transacciones</b><div>transaccion_id · cliente_id · fecha · tipo · monto · canal</div></div>
+      </aside>
+    </div>
+  </article>
+
+  <article class="lesson">
+    <h3><span class="ln">⚠</span>Ojo con el dialecto: aquí es SQLite, la prueba puede ser PostgreSQL/Redshift</h3>
+    <p>La lógica (window functions, CTEs, joins, agregaciones) es idéntica, pero las funciones de fecha cambian. Practica la lógica aquí y ten presente esta tabla de equivalencias para la entrevista:</p>
+    <div class="scroll"><table class="tbl">
+      <tr><th>Operación</th><th>SQLite (este lab)</th><th>PostgreSQL / Redshift</th></tr>
+      <tr><td>Mes de una fecha</td><td><code>strftime('%Y-%m', fecha)</code></td><td><code>DATE_TRUNC('month', fecha)</code> / <code>TO_CHAR(fecha,'YYYY-MM')</code></td></tr>
+      <tr><td>Diferencia en días</td><td><code>julianday(a) - julianday(b)</code></td><td><code>a - b</code> (Postgres) / <code>DATEDIFF(day, b, a)</code> (Redshift)</td></tr>
+      <tr><td>Fecha actual</td><td><code>date('now')</code></td><td><code>CURRENT_DATE</code></td></tr>
+      <tr><td>Sumar un mes</td><td><code>date(fecha, '+1 month')</code></td><td><code>fecha + INTERVAL '1 month'</code> / <code>DATEADD(month, 1, fecha)</code></td></tr>
+      <tr><td>Filtrar window function</td><td>Subquery con <code>WHERE rn = 1</code></td><td>Igual, o <code>QUALIFY rn = 1</code> en Redshift</td></tr>
+    </table></div>
+    <div class="co talk"><span class="ico">🎯</span><div><b class="t">Para la prueba en vivo</b>Di en voz alta lo que vas haciendo ("primero valido la unicidad de la llave…", "uso DENSE_RANK por los empates…"). En una evaluación grabada de 30 minutos, el razonamiento visible vale tanto como el resultado.</div></div>
+  </article>
+</section>
+
 <footer style="border-top:1px solid var(--line);padding-top:1.2rem;color:var(--muted);font-size:.82rem">
   Curso generado a partir del banco de preguntas de <code>preguntas/</code> · Los módulos se complementan con los archivos <code>01</code>–<code>10</code> en formato Markdown y con <code>ruta-data-engineer.html</code> para practicar en modo pregunta-respuesta.
 </footer>
@@ -1538,7 +1626,7 @@ def test_descarta_montos_negativos(spark):
 
   /* ---- lista de reproducción: intro → definiciones → lecciones → esencial, por módulo ---- */
   var items=[];
-  document.querySelectorAll('section.module').forEach(function(sec){
+  document.querySelectorAll('section.module:not(#lab)').forEach(function(sec){
     var h2=sec.querySelector('.mhead h2');
     var mtitle=h2?h2.textContent.trim():'';
     var mhead=sec.querySelector('.mhead');
@@ -1690,6 +1778,242 @@ def test_descarta_montos_negativos(spark):
   closeBtn.addEventListener('click',closeBar);
   if(heroBtn)heroBtn.addEventListener('click',function(){openBar();startItem(0)});
   window.addEventListener('beforeunload',function(){synth.cancel()});
+})();
+</script>
+<script>
+/* ==================== laboratorio SQL (sql.js / SQLite WASM) ==================== */
+(function(){
+  var ed=document.getElementById('sqled'),
+      out=document.getElementById('labout'),
+      st=document.getElementById('labstatus'),
+      exSel=document.getElementById('exsel'),
+      exEnun=document.getElementById('exenun'),
+      exTxt=document.getElementById('exenuntxt'),
+      solDet=document.getElementById('soldet'),
+      solCode=document.getElementById('solcode'),
+      solLoad=document.getElementById('solload');
+  if(!ed)return;
+
+  /* ---- ejercicios (enunciado + solución en dialecto SQLite) ---- */
+  var EX=[
+    {t:'1 · Deduplicar clientes_staging',
+     e:'La tabla clientes_staging tiene varias versiones del mismo cliente_id. Quédate con la versión más reciente de cada uno (por fecha_actualizacion).',
+     s:"SELECT cliente_id, nombre, email, fecha_actualizacion FROM (\n  SELECT s.*,\n         ROW_NUMBER() OVER (PARTITION BY cliente_id\n                            ORDER BY fecha_actualizacion DESC) AS rn\n  FROM clientes_staging s\n)\nWHERE rn = 1;"},
+    {t:'2 · Segundo crédito más alto por producto',
+     e:'Encuentra el crédito con el segundo monto más alto de cada producto. Piensa: ¿ROW_NUMBER, RANK o DENSE_RANK? ¿Qué pasa con los empates?',
+     s:"SELECT producto, credito_id, monto FROM (\n  SELECT c.*,\n         DENSE_RANK() OVER (PARTITION BY producto\n                            ORDER BY monto DESC) AS rk\n  FROM creditos c\n)\nWHERE rk = 2;"},
+    {t:'3 · Total pagado acumulado por crédito',
+     e:'Para cada crédito, muestra sus cuotas pagadas con el total pagado acumulado cuota a cuota (running total).',
+     s:"SELECT credito_id, nro_cuota, fecha_pago, monto_pagado,\n       SUM(monto_pagado) OVER (PARTITION BY credito_id\n                               ORDER BY nro_cuota) AS pagado_acum\nFROM pagos\nWHERE monto_pagado IS NOT NULL\nORDER BY credito_id, nro_cuota;"},
+    {t:'4 · Clientes con transacciones en meses consecutivos',
+     e:'Encuentra los clientes que tuvieron transacciones en al menos dos meses consecutivos (ej. 2026-03 y 2026-04).',
+     s:"WITH meses AS (\n  SELECT DISTINCT cliente_id, strftime('%Y-%m', fecha) AS mes\n  FROM transacciones\n), con_prev AS (\n  SELECT cliente_id, mes,\n         LAG(mes) OVER (PARTITION BY cliente_id ORDER BY mes) AS mes_prev\n  FROM meses\n)\nSELECT DISTINCT cliente_id\nFROM con_prev\nWHERE CAST(strftime('%Y', mes||'-01') AS INT)*12 + CAST(strftime('%m', mes||'-01') AS INT)\n    - (CAST(strftime('%Y', mes_prev||'-01') AS INT)*12 + CAST(strftime('%m', mes_prev||'-01') AS INT)) = 1;"},
+    {t:'5 · Atraso promedio y cuotas vencidas impagas',
+     e:'Por crédito: días de atraso promedio de las cuotas pagadas, y cuántas cuotas ya vencidas siguen sin pagar (fecha_pago NULL). Ordena de peor a mejor.',
+     s:"SELECT credito_id,\n       ROUND(AVG(julianday(fecha_pago) - julianday(fecha_vencimiento)), 1) AS atraso_prom_dias,\n       SUM(CASE WHEN fecha_pago IS NULL AND fecha_vencimiento < date('now')\n                THEN 1 ELSE 0 END) AS cuotas_vencidas_impagas\nFROM pagos\nGROUP BY credito_id\nORDER BY cuotas_vencidas_impagas DESC, atraso_prom_dias DESC;"},
+    {t:'6 · Tasa de mora 30+ por cosecha (vintage)',
+     e:'Por mes de desembolso (cosecha): % de créditos que tienen alguna cuota impaga con más de 30 días de vencida. El análisis clásico de riesgo de crédito.',
+     s:"WITH mora AS (\n  SELECT c.credito_id,\n         strftime('%Y-%m', c.fecha_desembolso) AS cosecha,\n         MAX(CASE WHEN p.fecha_pago IS NULL\n                   AND julianday(date('now')) - julianday(p.fecha_vencimiento) > 30\n                  THEN 1 ELSE 0 END) AS en_mora_30\n  FROM creditos c\n  JOIN pagos p ON p.credito_id = c.credito_id\n  GROUP BY c.credito_id\n)\nSELECT cosecha,\n       COUNT(*) AS creditos,\n       SUM(en_mora_30) AS en_mora,\n       ROUND(100.0 * SUM(en_mora_30) / COUNT(*), 1) AS pct_mora30\nFROM mora\nGROUP BY cosecha\nORDER BY cosecha;"},
+    {t:'7 · Pivot: transacciones por mes y tipo',
+     e:'Total de transacciones por mes, con una columna por tipo (DEPOSITO, RETIRO, PAGO, COMPRA).',
+     s:"SELECT strftime('%Y-%m', fecha) AS mes,\n       SUM(CASE WHEN tipo='DEPOSITO' THEN monto END) AS depositos,\n       SUM(CASE WHEN tipo='RETIRO'   THEN monto END) AS retiros,\n       SUM(CASE WHEN tipo='PAGO'     THEN monto END) AS pagos,\n       SUM(CASE WHEN tipo='COMPRA'   THEN monto END) AS compras\nFROM transacciones\nGROUP BY mes\nORDER BY mes;"},
+    {t:'8 · Detectar huecos en la secuencia de cuotas',
+     e:'Algunos créditos tienen cuotas faltantes en la tabla pagos (la secuencia nro_cuota salta). Encuéntralos con LAG.',
+     s:"WITH sec AS (\n  SELECT credito_id, nro_cuota,\n         LAG(nro_cuota) OVER (PARTITION BY credito_id\n                              ORDER BY nro_cuota) AS cuota_prev\n  FROM pagos\n)\nSELECT credito_id, cuota_prev AS despues_de, nro_cuota AS salta_a\nFROM sec\nWHERE nro_cuota - cuota_prev > 1;"}
+  ];
+  EX.forEach(function(x,i){
+    var o=document.createElement('option');o.value=i;o.textContent=x.t;exSel.appendChild(o);
+  });
+  exSel.addEventListener('change',function(){
+    var i=parseInt(exSel.value,10);
+    if(i<0||isNaN(i)){exEnun.hidden=true;solDet.hidden=true;return;}
+    var x=EX[i];
+    exTxt.textContent=x.e;exEnun.hidden=false;
+    solCode.textContent=x.s;solDet.hidden=false;solDet.open=false;
+    ed.value='-- '+x.t+'\n-- '+x.e+'\n\n';
+    ed.focus();
+  });
+  solLoad.addEventListener('click',function(){
+    var i=parseInt(exSel.value,10);
+    if(i>=0)ed.value='-- Solución · '+EX[i].t+'\n'+EX[i].s+'\n';
+    run();
+  });
+
+  /* ---- carga diferida de sql.js desde CDN (con fallback de versión) ---- */
+  var db=null,SQLlib=null,initPromise=null;
+  var VERSIONS=['1.13.0','1.10.3','1.8.0'];
+  function loadScript(v){
+    return new Promise(function(res,rej){
+      var s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/sql.js/'+v+'/sql-wasm.min.js';
+      s.onload=function(){res(v)};s.onerror=function(){s.remove();rej(v)};
+      document.head.appendChild(s);
+    });
+  }
+  function ensureDb(){
+    if(db)return Promise.resolve(db);
+    if(initPromise)return initPromise;
+    st.textContent='Cargando motor SQL…';
+    var chain=Promise.reject();
+    VERSIONS.forEach(function(v){chain=chain.catch(function(){return loadScript(v)});});
+    initPromise=chain.then(function(v){
+      return initSqlJs({locateFile:function(f){return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/'+v+'/'+f}});
+    }).then(function(S){
+      SQLlib=S;db=new S.Database();
+      var n=seed(db);
+      st.textContent='Base lista · '+n+' filas en 5 tablas';
+      return db;
+    }).catch(function(e){
+      initPromise=null;st.textContent='';
+      throw new Error('No se pudo cargar el motor SQL desde el CDN. ¿Estás sin internet? Reintenta.');
+    });
+    return initPromise;
+  }
+
+  /* ---- datos: generación determinística (misma base en cada visita) ---- */
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+  function pad(n){return (n<10?'0':'')+n}
+  function dstr(y,m,d){return y+'-'+pad(m)+'-'+pad(d)}
+  function addMonths(y,m,k){var t=(m-1)+k;return [y+Math.floor(t/12), (t%12)+1]}
+  function seed(db){
+    var r=mulberry32(20260831);
+    var pick=function(a){return a[Math.floor(r()*a.length)]};
+    var nombres=['Ana','Luis','María','Jorge','Carla','Pedro','Lucía','Diego','Rosa','Iván','Elena','Marco','Paola','Hugo','Silvia','Óscar','Nadia','Raúl','Karen','Félix'];
+    var apellidos=['Quispe','García','Torres','Rojas','Flores','Castillo','Mendoza','Vargas','Huamán','Salazar','Paredes','Cruz','Reyes','Chávez','Luna'];
+    var distritos=['La Victoria','San Juan de Lurigancho','Miraflores','Comas','Surco','Ate','Callao','Los Olivos','Breña','San Miguel'];
+    var total=0;
+    db.run("CREATE TABLE clientes(cliente_id INTEGER PRIMARY KEY, nombre TEXT, distrito TEXT, fecha_alta TEXT, score INTEGER, ingreso_mensual REAL);"+
+           "CREATE TABLE clientes_staging(cliente_id INTEGER, nombre TEXT, email TEXT, fecha_actualizacion TEXT);"+
+           "CREATE TABLE creditos(credito_id INTEGER PRIMARY KEY, cliente_id INTEGER, producto TEXT, monto REAL, tasa REAL, plazo_meses INTEGER, fecha_desembolso TEXT, estado TEXT);"+
+           "CREATE TABLE pagos(pago_id INTEGER PRIMARY KEY, credito_id INTEGER, nro_cuota INTEGER, fecha_vencimiento TEXT, fecha_pago TEXT, monto_cuota REAL, monto_pagado REAL);"+
+           "CREATE TABLE transacciones(transaccion_id INTEGER PRIMARY KEY, cliente_id INTEGER, fecha TEXT, tipo TEXT, monto REAL, canal TEXT);");
+    /* clientes */
+    var vals=[];
+    for(var i=1;i<=40;i++){
+      var nom=pick(nombres)+' '+pick(apellidos);
+      var alta=dstr(2023+Math.floor(r()*3),1+Math.floor(r()*12),1+Math.floor(r()*28));
+      vals.push("("+i+",'"+nom+"','"+pick(distritos)+"','"+alta+"',"+(300+Math.floor(r()*650))+","+(1200+Math.floor(r()*138)*100)+")");
+    }
+    db.run("INSERT INTO clientes VALUES "+vals.join(","));total+=vals.length;
+    /* staging con duplicados */
+    vals=[];
+    for(i=1;i<=18;i++){
+      var nv=1+Math.floor(r()*3);
+      for(var v=0;v<nv;v++){
+        var f=dstr(2026,1+Math.floor(r()*8),1+Math.floor(r()*28))+' '+pad(Math.floor(r()*24))+':'+pad(Math.floor(r()*60));
+        vals.push("("+i+",'Cliente "+i+"','cliente"+i+(v>0?'.v'+v:'')+"@mail.com','"+f+"')");
+      }
+    }
+    db.run("INSERT INTO clientes_staging VALUES "+vals.join(","));total+=vals.length;
+    /* creditos + pagos */
+    var cvals=[],pvals=[],pid=1;
+    var HOY_Y=2026,HOY_M=8,HOY_D=31;
+    for(var c=1;c<=70;c++){
+      var cli=1+Math.floor(r()*40);
+      var prod=pick(['EFECTIVO','ELECTRO','MOTO','TARJETA']);
+      var monto=Math.round((500+r()*19500)/50)*50;
+      var tasa=Math.round((25+r()*65)*10)/10;
+      var plazo=pick([6,12,18,24]);
+      var mi=Math.floor(r()*17); /* 2025-03 .. 2026-07 */
+      var ym=addMonths(2025,3,mi);
+      var dia=1+Math.floor(r()*28);
+      var fdes=dstr(ym[0],ym[1],dia);
+      var perfil=r(); /* <0.7 bueno, <0.9 regular, resto malo */
+      var estado=perfil>=0.9?'CASTIGADO':(r()<0.15?'CANCELADO':'VIGENTE');
+      cvals.push("("+c+","+cli+",'"+prod+"',"+monto+","+tasa+","+plazo+",'"+fdes+"','"+estado+"')");
+      var cuota=Math.round(monto*(1+tasa/100*plazo/12)/plazo*100)/100;
+      var gapAt=(c%14===0)?2+Math.floor(r()*3):-1; /* algunos créditos con cuota faltante */
+      for(var k=1;k<=plazo;k++){
+        var vym=addMonths(ym[0],ym[1],k);
+        if(vym[0]>HOY_Y||(vym[0]===HOY_Y&&vym[1]>HOY_M+1))break; /* solo cuotas vencidas o del mes próximo */
+        if(k===gapAt)continue;
+        var venc=dstr(vym[0],vym[1],Math.min(dia,28));
+        var futura=(vym[0]>HOY_Y)||(vym[0]===HOY_Y&&vym[1]>HOY_M);
+        var fpago='NULL',mpago='NULL';
+        if(!futura){
+          var atraso;
+          if(perfil<0.7)atraso=(r()<0.9)?Math.floor(r()*6):Math.floor(r()*15);
+          else if(perfil<0.9)atraso=(r()<0.75)?Math.floor(r()*25):-1;
+          else atraso=(k<=2)?Math.floor(r()*20):-1; /* malo: paga las primeras y deja de pagar */
+          if(atraso>=0){
+            var pd=new Date(vym[0],vym[1]-1,Math.min(dia,28));
+            pd.setDate(pd.getDate()+atraso);
+            fpago="'"+dstr(pd.getFullYear(),pd.getMonth()+1,pd.getDate())+"'";
+            mpago=String(cuota);
+          }
+        }
+        pvals.push("("+(pid++)+","+c+","+k+",'"+venc+"',"+fpago+","+cuota+","+mpago+")");
+      }
+    }
+    db.run("INSERT INTO creditos VALUES "+cvals.join(","));total+=cvals.length;
+    db.run("INSERT INTO pagos VALUES "+pvals.join(","));total+=pvals.length;
+    /* transacciones: 2025-09 .. 2026-08 */
+    vals=[];
+    var tipos=['DEPOSITO','DEPOSITO','PAGO','PAGO','COMPRA','COMPRA','COMPRA','RETIRO'];
+    for(i=1;i<=260;i++){
+      var tcli=1+Math.floor(r()*r()*40); /* actividad sesgada: no todos los clientes son activos */
+      var tym=addMonths(2025,9,Math.floor(r()*12));
+      var tf=dstr(tym[0],tym[1],1+Math.floor(r()*28));
+      var tt=pick(tipos);
+      var tm=Math.round((tt==='COMPRA'?20+r()*900:50+r()*2500)*100)/100;
+      vals.push("("+i+","+tcli+",'"+tf+"','"+tt+"',"+tm+",'"+pick(['APP','APP','WEB','AGENCIA'])+"')");
+    }
+    db.run("INSERT INTO transacciones VALUES "+vals.join(","));total+=vals.length;
+    return total;
+  }
+
+  /* ---- ejecución y render ---- */
+  function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+  function render(results,ms){
+    out.innerHTML='';
+    if(!results.length){
+      out.innerHTML='<div class="rmeta">✓ Ejecutado en '+ms.toFixed(1)+' ms — la sentencia no devolvió filas.</div>';
+      return;
+    }
+    results.forEach(function(res){
+      var MAX=200,n=res.values.length;
+      var h='<div class="rmeta">'+n+' fila'+(n===1?'':'s')+' · '+ms.toFixed(1)+' ms'+(n>MAX?' · mostrando las primeras '+MAX:'')+'</div>';
+      h+='<div class="scroll"><table class="tbl"><tr>';
+      res.columns.forEach(function(col){h+='<th>'+esc(col)+'</th>'});
+      h+='</tr>';
+      res.values.slice(0,MAX).forEach(function(row){
+        h+='<tr>';
+        row.forEach(function(cell){
+          h+=(cell===null)?'<td class="null">NULL</td>':'<td>'+esc(String(cell))+'</td>';
+        });
+        h+='</tr>';
+      });
+      h+='</table></div>';
+      out.innerHTML+=h;
+    });
+  }
+  function showErr(msg){out.innerHTML='<div class="errbox">✗ '+esc(msg)+'</div>'}
+  function run(){
+    ensureDb().then(function(){
+      var t0=performance.now();
+      try{render(db.exec(ed.value),performance.now()-t0);}
+      catch(e){showErr(e.message);}
+    }).catch(function(e){showErr(e.message)});
+  }
+  document.getElementById('runbtn').addEventListener('click',run);
+  document.getElementById('clearbtn').addEventListener('click',function(){ed.value='';ed.focus()});
+  document.getElementById('resetbtn').addEventListener('click',function(){
+    if(db){db.close();db=new SQLlib.Database();var n=seed(db);st.textContent='Datos reiniciados · '+n+' filas';out.innerHTML='';}
+    else run();
+  });
+  document.querySelectorAll('.stbl').forEach(function(el){
+    el.addEventListener('click',function(){
+      ed.value='SELECT * FROM '+el.getAttribute('data-t')+' LIMIT 10;';
+      run();
+    });
+  });
+  ed.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();run();}
+    if(e.key==='Tab'){e.preventDefault();
+      var s=ed.selectionStart;ed.value=ed.value.slice(0,s)+'  '+ed.value.slice(ed.selectionEnd);
+      ed.selectionStart=ed.selectionEnd=s+2;
+    }
+  });
 })();
 </script>
 </body>
